@@ -3,6 +3,7 @@ import usePlayerStore from '../../store/PlayerStore';
 import { INieRButtonsConfigs, NieRCustomBox } from './NieRCustomBox';
 import systemInfoStore from '../../store/SystemInfoStore';
 import { useTranslations } from 'next-intl';
+import useAudioStore from '../../store/AudioStore';
 
 const textList = [
   'giveUpMsg1',
@@ -28,6 +29,7 @@ export default function ContinueOverlay() {
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
   const [startCloseAnimation, setStartCloseAnimation] = useState<boolean>(false)
   const t = useTranslations()
+  const { stop: stopAudio } = useAudioStore();
 
   const buttonsConfigs: INieRButtonsConfigs[] = [
     {
@@ -61,6 +63,7 @@ export default function ContinueOverlay() {
         setButtonDisabled(true)
         setStartCloseAnimation(true)
         setTimeout(() => {
+          stopAudio('Weight of the World')
           startCutscene("showTitleScreen");
           setShowOverlay('continueOverlay', false);
           clearBackgroundDisplayTexts();

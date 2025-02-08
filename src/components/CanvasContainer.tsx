@@ -48,11 +48,11 @@ export default function CanvasContainer() {
     const value: Schema = {
       r3f_perf: {
         label: "r3f-perf",
-        value: true,
+        value: process.env.NODE_ENV === 'development',
       },
       threeStats: {
         label: "Stats",
-        value: true,
+        value: process.env.NODE_ENV === 'development',
       },
       freeCamera: {
         label: "Free Camera",

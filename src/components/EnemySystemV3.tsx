@@ -82,7 +82,10 @@ export const EnemySystemV3 = React.memo(() => {
             if (resetType?.type == "empty") {
                 setEnemiesMap(new Map());
             } else if (resetType?.type == "resetPhase") {
-                handleUpdateEnemiesByPhase(resetType?.phase || currentPhase);
+                setEnemiesMap(new Map());
+                setTimeout(() => {
+                    handleUpdateEnemiesByPhase(resetType?.phase || currentPhase);
+                }, 200)
             }
             checkEnemyList.current.clear();
         })
@@ -233,14 +236,14 @@ export const EnemySystemV3 = React.memo(() => {
         <>
             <FontPreloader />
             <Html>
-                <button className='text-white' onClick={() => {
+                {/* <button className='text-white' onClick={() => {
                     // const newMap = new Map();
                     // newMap.set(FinalConfirmEnemy.id, FinalConfirmEnemy);
                     // setEnemiesMap(newMap);
                     addNotification(t("unlockDebugMenu") + Math.random())
                 }}>
                     log
-                </button>
+                </button> */}
             </Html>
             {Array.from(enemiesMap.values()).map(enemy => (
                 <Enemy

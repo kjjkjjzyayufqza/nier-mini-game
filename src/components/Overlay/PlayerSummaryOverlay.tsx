@@ -31,7 +31,7 @@ export default function PlayerSummaryOverlay() {
     const contextConfigs = useMemo(() => {
         return [{
             title: t("score"),
-            value: playerShareInfo.points,
+            value: (playerShareInfo.points ?? 0) - (playerShareInfo.onHitCount ?? 0) - (playerShareInfo.retryCount ?? 0),
         }, {
             title: t("time"),
             value: formatTime(playerShareInfo.playerTime),

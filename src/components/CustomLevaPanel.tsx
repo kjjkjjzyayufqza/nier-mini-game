@@ -11,11 +11,16 @@ import { filePicker } from "leva-file-picker";
 export default function CustomLevaPanel() {
     const setCurrentPhase = systemInfoStore(state => state.setCurrentPhase)
     const currentPhase = systemInfoStore(state => state.systemInfo.currentPhase)
-    const importantPhaseRecord = systemInfoStore(state => state.importantPhaseRecord)
     const updatePlayerInfo = usePlayerStore(state => state.updatePlayerInfo)
-    const systemInfo = systemInfoStore(state => state.systemInfo)
+    const respawnPlayer = usePlayerStore(state => state.respawnPlayer)
+    const resetPlayerInfo = usePlayerStore(state => state.resetPlayerInfo)
+    const needOtherPlayerHelp = usePlayerStore(state => state.playerInfo.needOtherPlayerHelp)
     const { initVolume, play: playAudio, setAllVolume, stop: stopAudio, addSound, removeSound, removeSoundByType, sounds } = useAudioStore();
+    const addNotification = systemInfoStore(state => state.addNotification)
     const firstLoad = useRef(true)
+    const phaseData = useMemo(() => {
+        return Array.from(new Set(EnemyData.map(e => e.phase)))
+    }, [])
 
     function onFileChange(file: File) {
         if (!file) {
@@ -59,18 +64,46 @@ export default function CustomLevaPanel() {
 
     const debugOptions = useCallback(() => {
         const value: Schema = {
+            phase: {
+                label: "Phase",
+                value: currentPhase,
+                options: phaseData,
+                onChange: (v) => {
+                    if (!v) return
+                    setCurrentPhase(v)
+                    addNotification(`Jump to ${v} phase`)
+                }
+            },
+            'Jump To final': button((get) => {
+                PubSub.publish("resetEnemiesData", {
+                    type: "resetPhase",
+                    phase: "final"
+                })
+                addNotification(`Jump to final phase`)
+            }),
             'Clear Enemy': button((get) => {
                 PubSub.publish("resetEnemiesData", {
                     type: "empty"
                 })
+                addNotification(`Clear all enemies`)
             }),
             help: {
                 label: "Help",
-                value: false,
+                value: needOtherPlayerHelp,
                 onChange: (v) => {
+                    if (firstLoad.current) return
                     updatePlayerInfo({ needOtherPlayerHelp: v })
+                    addNotification(`Set other player to help: ${v}`)
                 }
-            }
+            },
+            'Reset Player': button(() => {
+                resetPlayerInfo()
+                addNotification(`Reset player`)
+            }),
+            'Respawn Player': button(() => {
+                respawnPlayer()
+                addNotification(`Respawn player`)
+            }),
         }
         return value
     }, [])

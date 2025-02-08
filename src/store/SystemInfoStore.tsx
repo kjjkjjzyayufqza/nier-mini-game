@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
+import { v4 as uuid } from 'uuid';
 
 interface ISystemInfo {
     mainOverlayShowed: boolean;
@@ -206,7 +207,7 @@ const systemInfoStore = create<SystemInfoContextType>()(
         },
         notificationList: [],
         addNotification: (message) => {
-            const id = Date.now().toString();
+            const id = uuid();
             const newMessage = {
                 id,
                 message: message

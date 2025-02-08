@@ -508,7 +508,7 @@ export const Player = () => {
                         args={[playerOnHitExpandingRingHitBoxSize]} // 动态调整球体碰撞体的半径
                     />
                     <PlayerOnHitExpandingRingEffect />
-                    <Html>
+                    {process.env.NODE_ENV == "development" && <Html>
                         <button className="text-white top-5 absolute" onClick={() => {
                             onHit(undefined as any, { rigidBodyObject: { userData: { type: 'enemy_normal_projectile' } } } as any)
                         }}>
@@ -519,7 +519,7 @@ export const Player = () => {
                         }}>
                             get player
                         </button>
-                    </Html>
+                    </Html>}
                 </group>
             </RigidBody>
             <PlayerMoveEffects />
