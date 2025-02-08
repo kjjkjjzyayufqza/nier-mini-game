@@ -103,6 +103,9 @@ export default function MainTitleOverlay() {
                             </Link>
                         ))}
                     </div>
+                    <div className='mt-2'>
+                        Source: <a href="https://github.com/kjjkjjzyayufqza/nier-mini-game" className='text-[#E5E5E3 underline'>GitHub</a>
+                    </div>
                 </div>
             </div>
             <div>
