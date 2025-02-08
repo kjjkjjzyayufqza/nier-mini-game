@@ -1,0 +1,55 @@
+{
+  "name": "moovoo_web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next dev",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-spring/parallax": "^9.7.5",
+    "@react-spring/web": "^9.7.5",
+    "@react-three/drei": "^9.121.4",
+    "@react-three/fiber": "9.0.0-rc.6",
+    "@react-three/postprocessing": "^2.16.3",
+    "@react-three/rapier": "^1.5.0",
+    "@types/howler": "^2.2.12",
+    "@types/node": "22.10.2",
+    "@types/pubsub-js": "^1.8.6",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "@types/three": "^0.171.0",
+    "@vercel/analytics": "^1.4.1",
+    "@vercel/speed-insights": "^1.1.0",
+    "autoprefixer": "10.4.20",
+    "howler": "^2.2.4",
+    "leva": "^0.10.0",
+    "leva-file-picker": "^1.2.3",
+    "mongodb": "^6.13.0",
+    "next": "15.1.6",
+    "next-intl": "^3.26.3",
+    "postcss": "8.4.49",
+    "postprocessing": "^6.36.4",
+    "pubsub-js": "^1.9.5",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-icons": "^5.4.0",
+    "react-use": "^17.6.0",
+    "tailwindcss": "3.4.17",
+    "three": "^0.171.0",
+    "three-custom-shader-material": "^6.2.1",
+    "typewriter-effect": "^2.21.0",
+    "use-debounce": "^10.0.4",
+    "uuid": "^11.0.3",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "r3f-perf": "^7.2.3",
+    "typescript": "5.7.3"
+  },
+  "resolutions": {
+    "@radix-ui/react-portal": "1.0.2"
+  }
+}
