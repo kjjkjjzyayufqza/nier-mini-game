@@ -70,6 +70,8 @@ interface SystemInfoContextType {
     setStartDestroyOnlineResultAnimation: (value: boolean) => void;
     startDestroyPlayerSummaryAnimation: boolean;
     setStartDestroyPlayerSummaryAnimation: (value: boolean) => void;
+    postEffects: boolean;
+    setPostEffects: (value: boolean) => void;
 }
 
 const systemInfoStore = create<SystemInfoContextType>()(
@@ -242,6 +244,11 @@ const systemInfoStore = create<SystemInfoContextType>()(
         setStartDestroyPlayerSummaryAnimation: (value) =>
             set((state) => ({
                 startDestroyPlayerSummaryAnimation: value,
+            })),
+        postEffects: true,
+        setPostEffects: (value) =>
+            set((state) => ({
+                postEffects: value,
             })),
     }))
 );

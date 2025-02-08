@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { KeyboardControls, Loader, OrbitControls, PerformanceMonitor, Stats } from '@react-three/drei';
+import { KeyboardControls, Loader, OrbitControls, PerformanceMonitor, Stats, useDetectGPU } from '@react-three/drei';
 import { Player } from './Player';
 import { Physics } from '@react-three/rapier';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -29,8 +29,11 @@ const keyboardMap = [
 
 export default function CanvasContainer() {
   const gameStarted = systemInfoStore((state) => state.gameStarted);
+  const postEffects = systemInfoStore((state) => state.postEffects);
+  const setPostEffects = systemInfoStore((state) => state.setPostEffects);
   const sceneRef = useRef<any>(undefined)
   const [dpr, setDpr] = useState(1)
+
   const sceneOptions = useMemo(() => {
     const sceneDebugOption: Schema = {
       bgColor: {
@@ -39,7 +42,10 @@ export default function CanvasContainer() {
       },
       postEffects: {
         label: "Post Effects",
-        value: true,
+        value: postEffects,
+        onChange: (value: boolean) => {
+          setPostEffects(value)
+        }
       },
     }
     return sceneDebugOption
@@ -102,7 +108,7 @@ export default function CanvasContainer() {
         {pDebug.freeCamera && <OrbitControls />}
         <SceneBackgroundText />
         <SceneEffects />
-        {sceneOptions.postEffects && <ThreeEffects />}
+        {postEffects && <ThreeEffects />}
         {pDebug.r3f_perf && <Perf position='top-left' style={{ marginTop: "3rem" }} />}
         {pDebug.threeStats && <Stats />}
       </Canvas>
