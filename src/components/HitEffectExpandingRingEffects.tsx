@@ -1,7 +1,7 @@
-import { useFrame } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import PubSub from 'pubsub-js';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 export const HitEffectExpandingRing = ({
   id,
@@ -71,7 +71,7 @@ void main() {
   // 控制圆环的当前半径
   const radius = useRef(0);
 
-  useFrame((state, delta) => {
+  useFixedFrameUpdate((state, delta) => {
     if (materialRef.current) {
       if (radius.current > maxRadius) {
         // 超过最大半径后隐藏

@@ -1,9 +1,9 @@
-import { useFrame } from '@react-three/fiber';
 import { RapierRigidBody, InstancedRigidBodies, interactionGroups, InstancedRigidBodyProps, MeshCollider, CuboidCollider, vec3, CollisionTarget } from '@react-three/rapier';
 import React, { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three';
 import { IEnemyProjectile, IProjectile } from '../store/PlayerStore';
 import systemInfoStore from '../store/SystemInfoStore';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 export default function EnemyUnbrokenProjectile() {
     const enemyUnbrokenProjectileRigidBodies = useRef<RapierRigidBody[]>([]);
@@ -154,7 +154,7 @@ void main() {
         }
     }, [])
 
-    useFrame(() => {
+    useFixedFrameUpdate(() => {
         enemyUnbrokenProjectileRigidBodies.current.forEach((projectileRigidBody) => {
             //如果x或z超出边界，销毁
             if (!projectileRigidBody.isEnabled()) return

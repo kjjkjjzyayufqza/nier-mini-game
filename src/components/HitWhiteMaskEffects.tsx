@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
 import PubSub from "pubsub-js";
 import { vec3 } from "@react-three/rapier";
+import { useFixedFrameUpdate } from "../hook/useFixedFrameUpdate";
 
 const HitWhiteMask = ({ id, container }: { id: string, container: { x: number, y: number } }) => {
     const planeRef = useRef<any>(null);
@@ -66,7 +66,7 @@ void main() {
 
 
     // 动画帧更新
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (materialRef.current.uniforms.uTime.value < 1.0) {
             materialRef.current.uniforms.uTime.value += delta * 3; // 增加时间
         } else {

@@ -1,9 +1,10 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { Html, Text } from '@react-three/drei'
-import { useFrame, useThree } from '@react-three/fiber'
+import {useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { vec3 } from '@react-three/rapier';
 import PubSub from 'pubsub-js';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 //https://www.geeksforgeeks.org/how-to-replace-a-character-at-a-particular-index-in-javascript/
 function replaceChar(origString: string, replaceChar: string, index: number) {
@@ -72,9 +73,9 @@ const AutoChangeDisplayText: FC<AutoChangeDisplayTextProps> = ({
     const textUpdateCoolDownTime = useRef<any>({
         index: 0,
         value: 0,
-        coolDownTime: 0.05,
+        coolDownTime: 0.03,
         updateCount: 0,
-        spawnDelay: Math.random() * 5,
+        spawnDelay: Math.random() * 2,
         spawnStackTime: 1 //固定位置显示时间
     })
     const randomRotation = useMemo(() => {
@@ -103,7 +104,7 @@ const AutoChangeDisplayText: FC<AutoChangeDisplayTextProps> = ({
         }
     }, [])
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (textRef.current) {
             const textUpCT = textUpdateCoolDownTime.current
             if (textUpCT.spawnDelay > 0) {

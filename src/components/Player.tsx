@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useFrame, useLoader, useThree } from '@react-three/fiber'
+import {  useLoader, useThree } from '@react-three/fiber'
 import { Html, useKeyboardControls } from '@react-three/drei';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { BallCollider, CollisionTarget, interactionGroups, quat, RapierRigidBody, RigidBody, vec3 } from '@react-three/rapier';

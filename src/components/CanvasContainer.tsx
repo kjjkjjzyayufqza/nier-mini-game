@@ -14,7 +14,7 @@ import CustomLevaPanel from './CustomLevaPanel';
 import { button, Leva, useControls } from 'leva';
 import SceneBackgroundText from './SceneBackgroundText';
 import PlayTimerCounter from './PlayTimerCounter';
-import { EnemySystemV3 } from './EnemySystemV3';
+import { EnemySystem } from './EnemySystem';
 import { Schema } from 'leva/dist/declarations/src/types/public';
 import systemInfoStore from '../store/SystemInfoStore';
 import { isGameClear } from '../lib/isGameClear';
@@ -98,7 +98,7 @@ export default function CanvasContainer() {
               {/* timeStep = vary 是为了避免当前帧率低于设置的值，可能会导致物理更新滞后，影响流畅性 */}
               <AirWall />
               <Player />
-              <EnemySystemV3 />
+              <EnemySystem />
               <ProjectileSystem />
             </Physics>
           </>

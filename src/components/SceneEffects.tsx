@@ -1,31 +1,29 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
-import { Html } from '@react-three/drei';
-import { vec3 } from '@react-three/rapier';
+import { euler, vec3 } from '@react-three/rapier';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 export const SceneEffects = () => {
   const [COUNT, setCOUNT] = useState(0); // 粒子数量
-  const [particles, setParticles] = useState<{
-    id: number;
-    enabled: boolean;
+  const particles = useRef<{
     position: THREE.Vector3;
     targetPosition: THREE.Vector3;
     opacity: number;
     maxDuration: number;
-    size: [number, number];
+    lifeTime: number;
+    rotation: THREE.Euler;
   }[]>([]);
-  const groupRef = useRef<THREE.Group>(null); // 粒子组
-  const size: [number, number] = [0.0055, 0.0055];
   const visiblePage = useRef<boolean>(true);
+  const instancedMeshRef = useRef<THREE.InstancedMesh>(null); // 使用 InstancedMesh 渲染粒子
+  const matrix = useMemo(() => new THREE.Matrix4(), []);
 
   // 初始化粒子
   const initParticles = (count: number) => {
     const list = [];
     for (let i = 0; i < count; i++) {
-      const position: THREE.Vector3 = vec3({
+      const position = vec3({
         x: (Math.random() - 0.5) * 5,
-        y: -1, // 固定 y 轴
+        y: -1,
         z: (Math.random() - 0.5) * 5
       });
 
@@ -39,66 +37,86 @@ export const SceneEffects = () => {
         );
 
       list.push({
-        id: i,
-        enabled: true,
         position,
         targetPosition: randomTargetPosition,
         opacity: 0,
+        lifeTime: 0,
         maxDuration: 2 + Math.random() * 10,
-        size,
+        rotation: euler({ x: Math.PI / -2, y: 0, z: 0 }),
       });
     }
     return list;
   };
 
-  // 动态更新粒子数量
-  const updateParticles = () => {
-    if (groupRef.current) {
-      const currentCount = groupRef.current.children.length;
-
-      // 如果粒子数量增加
-      if (COUNT > currentCount) {
-        const newParticles = initParticles(COUNT - currentCount);
-        setParticles((prev) => [...prev, ...newParticles]);
-
-        newParticles.forEach((particle) => {
-          const plane = new THREE.PlaneGeometry(particle.size[0], particle.size[1]);
-          const planeMaterial = new THREE.MeshStandardMaterial({
-            color: '#FFFEF9',
-            opacity: 0,
-            transparent: true,
-            emissive: '#45423A',
-            emissiveIntensity: 0,
-          });
-          const planeMesh = new THREE.Mesh(plane, planeMaterial);
-          planeMesh.position.copy(particle.position);
-          planeMesh.rotation.set(Math.PI / -2, 0, 0);
-          groupRef.current!.add(planeMesh);
-        });
-      }
-
-      // 如果粒子数量减少
-      if (COUNT < currentCount) {
-        const diff = currentCount - COUNT;
-        for (let i = 0; i < diff; i++) {
-          groupRef.current.remove(groupRef.current.children[groupRef.current.children.length - 1]);
-        }
-        setParticles((prev) => prev.slice(0, COUNT));
-      }
-    }
-  };
-
   // 初始化粒子组
   useEffect(() => {
-    if (groupRef.current) {
-      setParticles(initParticles(COUNT));
-      updateParticles();
+    particles.current = initParticles(COUNT);
+
+    // 初始化 InstancedMesh 的矩阵和材质
+    if (instancedMeshRef.current) {
+      const opacityArray = new Float32Array(COUNT);
+      for (let i = 0; i < COUNT; i++) {
+        const particle = particles.current[i];
+        matrix.setPosition(particle.position);
+        matrix.makeRotationFromEuler(particle.rotation);
+        instancedMeshRef.current.setMatrixAt(i, matrix);
+
+        // 初始化透明度
+        opacityArray[i] = particle.opacity;
+      }
+
+      // 添加透明度缓冲属性
+      instancedMeshRef.current.geometry.setAttribute(
+        'instanceOpacity',
+        new THREE.InstancedBufferAttribute(opacityArray, 1)
+      );
+      instancedMeshRef.current.instanceMatrix.needsUpdate = true;
     }
   }, []);
 
   // 动态监听 COUNT 的变化
   useEffect(() => {
-    updateParticles();
+    if (instancedMeshRef.current) {
+      const currentCount = particles.current.length;
+
+      if (COUNT > currentCount) {
+        const newParticles = initParticles(COUNT - currentCount);
+        particles.current.push(...newParticles);
+
+        const opacityArray = new Float32Array(COUNT);
+        for (let i = 0; i < COUNT; i++) {
+          const particle = particles.current[i];
+          matrix.setPosition(particle.position);
+          matrix.makeRotationFromEuler(particle.rotation);
+          instancedMeshRef.current.setMatrixAt(i, matrix);
+
+          // 初始化透明度
+          opacityArray[i] = particle.opacity;
+        }
+
+        // 更新透明度缓冲属性
+        instancedMeshRef.current.geometry.setAttribute(
+          'instanceOpacity',
+          new THREE.InstancedBufferAttribute(opacityArray, 1)
+        );
+      } else if (COUNT < currentCount) {
+        particles.current = particles.current.slice(0, COUNT);
+
+        const opacityArray = new Float32Array(COUNT);
+        for (let i = 0; i < COUNT; i++) {
+          opacityArray[i] = particles.current[i].opacity;
+        }
+
+        // 更新透明度缓冲属性
+        instancedMeshRef.current.geometry.setAttribute(
+          'instanceOpacity',
+          new THREE.InstancedBufferAttribute(opacityArray, 1)
+        );
+      }
+
+      instancedMeshRef.current.count = COUNT;
+      instancedMeshRef.current.instanceMatrix.needsUpdate = true;
+    }
   }, [COUNT]);
 
   // 页面可见性监听
@@ -109,9 +127,12 @@ export const SceneEffects = () => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    const updateSceneEffectCountToken = PubSub.subscribe('updateSceneEffectCount', (msg: string, data: number) => {
-      setCOUNT(data);
-    })
+    const updateSceneEffectCountToken = PubSub.subscribe(
+      'updateSceneEffectCount',
+      (msg: string, data: number) => {
+        setCOUNT(data);
+      }
+    );
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -120,70 +141,84 @@ export const SceneEffects = () => {
   }, []);
 
   // 动画帧更新
-  useFrame((state, delta) => {
-    if (groupRef.current && visiblePage.current) {
-      particles.forEach((particle, i) => {
-        const mesh = groupRef.current!.children[i] as THREE.Mesh;
-        if (!mesh?.material) return;
-        const material = mesh.material as THREE.MeshStandardMaterial;
+  useFixedFrameUpdate((state, delta) => {
+    if (instancedMeshRef.current && visiblePage.current) {
+      const opacityArray = instancedMeshRef.current.geometry.attributes.instanceOpacity?.array as Float32Array;
+      if (!opacityArray) return;
 
+      particles.current.forEach((particle, i) => {
         // 更新粒子位置
-        mesh.position.lerp(particle.targetPosition, 0.0005);
+        particle.position.lerp(particle.targetPosition, 0.0005);
 
         // 更新透明度
-        particle.opacity += Math.min(Math.random(), 0.3) * delta;
-        if (particle.opacity < 1) {
-          material.opacity += Math.min(Math.random(), 0.3) * delta;
+        if (particle.lifeTime >= particle.maxDuration) {
+          particle.opacity -= Math.max(Math.random(), 0.5) * delta;
+
+          if (particle.opacity <= 0) {
+            // 重置粒子位置和目标
+            const position = vec3({
+              x: (Math.random() - 0.5) * 5,
+              y: -1,
+              z: (Math.random() - 0.5) * 5
+            });
+
+            const range = 2;
+            const randomTargetPosition = position
+              .clone()
+              .set(
+                position.x + (Math.random() - 0.5) * range,
+                position.y + (Math.random() - 0.5) * range,
+                position.z + (Math.random() - 0.5) * range
+              );
+
+            particle.position = position;
+            particle.targetPosition = randomTargetPosition;
+            particle.opacity = 0;
+            particle.lifeTime = 0;
+          }
+        } else {
+          particle.opacity += Math.min(Math.random(), 0.02);
+          particle.lifeTime += delta;
         }
 
-        if (material.opacity >= 0.6) {
-          material.emissiveIntensity += 3.5 * delta;
-        }
+        // 更新 InstancedMesh 的矩阵
+        matrix.setPosition(particle.position);
+        instancedMeshRef.current?.setMatrixAt(i, matrix);
 
-        if (material.emissiveIntensity > 5) {
-          material.emissiveIntensity = 5;
-        }
-
-        if (particle.opacity >= 1) {
-          if (material.opacity > 0) material.opacity -= 0.3 * delta;
-        }
-        if (material.opacity < 0) {
-          material.opacity = 0;
-        }
-
-        // 重置粒子
-        if (particle.opacity >= particle.maxDuration) {
-          material.opacity = 0;
-          particle.opacity = 0;
-          material.emissiveIntensity = 0;
-
-          const position: THREE.Vector3 = new THREE.Vector3(
-            (Math.random() - 0.5) * 5,
-            -1,
-            (Math.random() - 0.5) * 5
-          );
-
-          const range = 1;
-          const randomTargetPosition = position
-            .clone()
-            .set(
-              position.x + (Math.random() - 0.5) * range,
-              position.y + (Math.random() - 0.5) * range,
-              position.z + (Math.random() - 0.5) * range
-            );
-
-          particle.targetPosition = randomTargetPosition;
-          particle.position = position;
-          mesh.position.copy(position);
-        }
+        // 更新透明度属性
+        opacityArray[i] = particle.opacity / particle.maxDuration;
       });
+
+      instancedMeshRef.current.geometry.attributes.instanceOpacity.needsUpdate = true;
+      instancedMeshRef.current.instanceMatrix.needsUpdate = true;
     }
   });
 
   return (
-    <>
-      <group ref={groupRef}>
-      </group>
-    </>
+    <instancedMesh
+      ref={instancedMeshRef}
+      args={[new THREE.PlaneGeometry(0.0055, 0.0055), new THREE.ShaderMaterial({
+        uniforms: {
+          color: { value: new THREE.Color('#FFFEF9') },
+          emissive: { value: new THREE.Color('#45423A') },
+        },
+        vertexShader: `
+          attribute float instanceOpacity;
+          varying float vOpacity;
+          void main() {
+            vOpacity = instanceOpacity;
+            gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 color;
+          varying float vOpacity;
+          void main() {
+            gl_FragColor = vec4(color, vOpacity);
+          }
+        `,
+        transparent: true,
+      }), COUNT]}
+    />
   );
 };

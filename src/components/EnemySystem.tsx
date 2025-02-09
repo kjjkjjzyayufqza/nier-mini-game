@@ -9,7 +9,7 @@ import useAudioStore from '../store/AudioStore';
 import { useTranslations } from 'next-intl';
 
 
-export const EnemySystemV3 = React.memo(() => {
+export const EnemySystem = React.memo(() => {
     const currentPhase = systemInfoStore(state => state.systemInfo.currentPhase);
     const setImportantPhaseRecord = systemInfoStore(state => state.setImportantPhaseRecord);
     const setCurrentPhase = systemInfoStore(state => state.setCurrentPhase);
@@ -18,16 +18,18 @@ export const EnemySystemV3 = React.memo(() => {
     const updatePlayerInfo = usePlayerStore(state => state.updatePlayerInfo);
     const playerHealth = usePlayerStore(state => state.playerInfo.playerHealth);
     const addNotification = systemInfoStore(state => state.addNotification);
-    const t = useTranslations();
     const [enemiesMap, setEnemiesMap] = useState<Map<string, EnemyProps>>(new Map());
     const pendingEnemies = useRef<Set<string>>(new Set());
     const pointsRef = useRef<number>(0);
     const timersRef = useRef<Set<NodeJS.Timeout>>(new Set());
     const checkEnemyList = useRef<Set<string>>(new Set());
-    const { play: playAudio, setVolume, stop: stopAudio } = useAudioStore();
+    const { play: playAudio } = useAudioStore();
 
     const batchAddEnemies = (enemies: EnemyProps[]) => {
         enemies.forEach(enemy => {
+            if (enemy.isImportantPhase) {
+                setImportantPhaseRecord(enemy.phase);
+            }
             if (enemy.spawnDelay) {
                 // 创建带延迟的定时器
                 const timer = setTimeout(() => {
@@ -199,10 +201,6 @@ export const EnemySystemV3 = React.memo(() => {
                     const childrenAlive = enemy.childrenIds?.some(id => enemiesMap.has(id) && id !== deadEnemy.id);
                     if (!childrenAlive && enemy.nextPhase) {
                         setCurrentPhase(enemy.nextPhase);
-                        if (enemy.isImportantPhase) {
-                            console.log('setImportantPhaseRecord', enemy.phase)
-                            setImportantPhaseRecord(enemy.phase);
-                        }
                         pendingEnemies.current.delete(id);
                     }
                 }
@@ -212,9 +210,6 @@ export const EnemySystemV3 = React.memo(() => {
         if (!deadEnemy?.isNeedChidAllDead) {
             if (deadEnemy.nextPhase) {
                 setCurrentPhase(deadEnemy.nextPhase);
-                if (deadEnemy.isImportantPhase) {
-                    setImportantPhaseRecord(deadEnemy.phase!);
-                }
             }
             return;
         };
@@ -223,9 +218,6 @@ export const EnemySystemV3 = React.memo(() => {
         const childrenAlive = deadEnemy.childrenIds?.some(id => enemiesMap.has(id));
         if (!childrenAlive && deadEnemy.nextPhase) {
             setCurrentPhase(deadEnemy.nextPhase);
-            if (deadEnemy.isImportantPhase) {
-                setImportantPhaseRecord(deadEnemy.phase!);
-            }
         } else {
             // 如果有子敌人还活着，将父敌人加入待处理列表
             pendingEnemies.current.add(deadEnemy.id);

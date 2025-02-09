@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { useRef, useMemo, useEffect, useCallback } from 'react';
-import { useFrame } from '@react-three/fiber';
 import PubSub from 'pubsub-js';
 import { v4 as uuidv4 } from 'uuid';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 const EnemyExplosionParticle = ({
     id,
@@ -152,7 +152,7 @@ const EnemyExplosionParticle = ({
         );
     };
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (pointRef.current.visible) {
             if (shaderMaterialRef.current.uniforms.uTime.value > 1) {
                 pointRef.current.visible = false;

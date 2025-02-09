@@ -1,13 +1,13 @@
 import { ColliderProps, CollisionTarget, CuboidArgs, CuboidCollider, euler, interactionGroups, MeshCollider, RigidBody, RigidBodyProps, vec3 } from '@react-three/rapier'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { Html, Text } from '@react-three/drei'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useThree } from '@react-three/fiber'
 import usePlayerRigidBodyInfo from '../hook/usePlayerRigidBodyInfo'
 import { EnemyProps, StrongType } from '../data/EnemyData'
 import useAudioStore from '../store/AudioStore'
 import { animated, useSpring } from '@react-spring/web'
-import systemInfoStore from '../store/SystemInfoStore'
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate'
 
 export const Enemy = ({
     id,
@@ -105,6 +105,37 @@ export const Enemy = ({
     const extremeEnemyShootingPortRightRef2 = useRef<any>(null)
 
     const { playerInfo } = usePlayerRigidBodyInfo()
+
+    const shootingPortConfigs: {
+        [key: string]: { name: string, ref: any, rotation?: number[], geometryType: string }[]
+    } = useMemo(() => {
+        return {
+            VERY_EASY: [{ name: "easyEnemyShootingPortCenter", ref: easyEnemyShootingPortCenterRef, geometryType: "box" }],
+            EASY: [{ name: "easyEnemyShootingPortCenter", ref: easyEnemyShootingPortCenterRef, geometryType: "box" }],
+            NORMAL: [
+                { name: "normalEnemyShootingPortCenter", ref: normalEnemyShootingPortCenterRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+            ],
+            MEDIUM: [
+                { name: "mediumEnemyShootingPortLeft", ref: mediumEnemyShootingPortLeftRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+                { name: "mediumEnemyShootingPortRight", ref: mediumEnemyShootingPortRightRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+            ],
+            HARD: [
+                { name: "hardEnemyShootingPortLeft", ref: hardEnemyShootingPortLeftRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+                { name: "hardEnemyShootingPortLeft2", ref: hardEnemyShootingPortLeftRef2, rotation: [Math.PI / -2, 0, Math.PI / 4], geometryType: "plane" },
+                { name: "hardEnemyShootingPortRight", ref: hardEnemyShootingPortRightRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+                { name: "hardEnemyShootingPortRight2", ref: hardEnemyShootingPortRightRef2, rotation: [Math.PI / -2, 0, Math.PI / 4], geometryType: "plane" },
+            ],
+            EXTREME: [
+                { name: "extremeEnemyShootingPortCenter", ref: extremeEnemyShootingPortCenterRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+                { name: "extremeEnemyShootingPortCenter2", ref: extremeEnemyShootingPortCenterRef2, rotation: [Math.PI / -2, 0, Math.PI / 4], geometryType: "plane" },
+                { name: "extremeEnemyShootingPortLeft", ref: extremeEnemyShootingPortLeftRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+                { name: "extremeEnemyShootingPortLeft2", ref: extremeEnemyShootingPortLeftRef2, rotation: [Math.PI / -2, 0, Math.PI / 4], geometryType: "plane" },
+                { name: "extremeEnemyShootingPortRight", ref: extremeEnemyShootingPortRightRef, rotation: [Math.PI / -2, 0, 0], geometryType: "plane" },
+                { name: "extremeEnemyShootingPortRight2", ref: extremeEnemyShootingPortRightRef2, rotation: [Math.PI / -2, 0, Math.PI / 4], geometryType: "plane" },
+            ],
+        };
+    }, []);
+    const currentConfig = shootingPortConfigs[strongType] || [];
 
     const TextBoundingUpdate = (e: any) => {
         if (e.geometry) {
@@ -540,7 +571,7 @@ export const Enemy = ({
         }
     }, [cuboidSize])
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (type == "DEBUG") return
         if (!enemyRef.current || !textRef.current) return
         handleUpdateColorOnFrame(delta)
@@ -587,78 +618,17 @@ export const Enemy = ({
                     </Html>}
                 </Text>
             </RigidBody>
-            <group name={'enemyShootPortGroup_' + id} ref={enemyShootPortGroupRef}>
-                {/* easy */}
-                {[StrongType.VERY_EASY, StrongType.EASY].includes(strongType) && <group name='easyEnemyShootingPort'>
-                    <mesh name="easyEnemyShootingPortCenter" ref={easyEnemyShootingPortCenterRef} visible={debugOptions.shootPortVisible}>
-                        <boxGeometry args={[0.05, 0.05, 0.05]} />
-                        <meshStandardMaterial transparent opacity={0.2} />
-                    </mesh>
-                </group>}
-                {/* normal */}
-                {strongType == StrongType.NORMAL && <group name='normalEnemyShootingPort'>
-                    <mesh name="normalEnemyShootingPortCenter" ref={normalEnemyShootingPortCenterRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                </group>}
-                {/* medium */}
-                {strongType == StrongType.MEDIUM && <group name='mediumEnemyShootingPort'>
-                    <mesh name="mediumEnemyShootingPortLeft" ref={mediumEnemyShootingPortLeftRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="mediumEnemyShootingPortRight" ref={mediumEnemyShootingPortRightRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                </group>}
-                {/* hard */}
-                {strongType == StrongType.HARD && <group name='hardEnemyShootingPort'>
-                    <mesh name="hardEnemyShootingPortLeft" ref={hardEnemyShootingPortLeftRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="hardEnemyShootingPortLeft2" ref={hardEnemyShootingPortLeftRef2} rotation={[Math.PI / -2, 0, Math.PI / 4]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="hardEnemyShootingPortRight" ref={hardEnemyShootingPortRightRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="hardEnemyShootingPortRight2" ref={hardEnemyShootingPortRightRef2} rotation={[Math.PI / -2, 0, Math.PI / 4]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                </group>}
-                {/* extreme */}
-                {strongType == StrongType.EXTREME && <group name='extremeEnemyShootingPort'>
-                    <mesh name="extremeEnemyShootingPortCenter" ref={extremeEnemyShootingPortCenterRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="extremeEnemyShootingPortCenter2" ref={extremeEnemyShootingPortCenterRef2} rotation={[Math.PI / -2, 0, Math.PI / 4]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="extremeEnemyShootingPortLeft" ref={extremeEnemyShootingPortLeftRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="extremeEnemyShootingPortLeft2" ref={extremeEnemyShootingPortLeftRef2} rotation={[Math.PI / -2, 0, Math.PI / 4]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="extremeEnemyShootingPortRight" ref={extremeEnemyShootingPortRightRef} rotation={[Math.PI / -2, 0, 0]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                    <mesh name="extremeEnemyShootingPortRight2" ref={extremeEnemyShootingPortRightRef2} rotation={[Math.PI / -2, 0, Math.PI / 4]} visible={debugOptions.shootPortVisible}>
-                        <planeGeometry args={[0.05, 0.05]} />
-                        <meshStandardMaterial color={'white'} transparent opacity={0.2} />
-                    </mesh>
-                </group>}
+            <group name={`${strongType.toLowerCase()}EnemyShootingPort`}>
+                {currentConfig.map((config, index) => (
+                    <ShootingPortMesh
+                        key={index}
+                        name={config.name}
+                        refProp={config.ref}
+                        rotation={config?.rotation || [0, 0, 0]}
+                        visible={debugOptions.shootPortVisible}
+                        geometryType={config.geometryType}
+                    />
+                ))}
             </group>
         </group>
     )
@@ -719,3 +689,37 @@ const OnHitAnimatedYoRHaButton = ({ text, value, maxValue }: { text: string, val
         </AnimatedDiv>
     );
 };
+
+const ShootingPortMesh = memo(({ name, refProp, rotation = [0, 0, 0], visible, geometryType = "box" }: {
+    name: string,
+    refProp: any,
+    rotation?: [number, number, number] | any[],
+    visible: boolean,
+    geometryType?: "box" | "plane" | string
+}) => {
+    const geometry = useMemo(() => {
+        return geometryType === "box"
+            ? new THREE.BoxGeometry(0.05, 0.05, 0.05)
+            : new THREE.PlaneGeometry(0.05, 0.05);
+    }, [geometryType]);
+
+    const material = useMemo(() => {
+        return new THREE.MeshStandardMaterial({
+            color: "white",
+            transparent: true,
+            opacity: 0.2,
+        });
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            // 清理资源
+            geometry.dispose();
+            material.dispose();
+        };
+    }, [geometry, material]);
+
+    return (
+        <mesh name={name} ref={refProp} rotation={rotation as any} visible={visible} geometry={geometry} material={material} />
+    );
+});

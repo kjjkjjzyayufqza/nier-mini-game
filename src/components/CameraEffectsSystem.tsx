@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import PubSub from "pubsub-js";
 import { vec3 } from "@react-three/rapier";
 import { Html } from "@react-three/drei";
+import { useFixedFrameUpdate } from "../hook/useFixedFrameUpdate";
 
 const CameraShakeEffect = () => {
     const enable = useRef(false);
@@ -24,7 +25,7 @@ const CameraShakeEffect = () => {
         shakeTimeElapsed.current = 0; // 重置时间
     }, [camera]);
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (!camera) return;
         if (!originalPosition.current) return;
         if (!enable.current) return;
@@ -124,7 +125,7 @@ const CameraRedHitEffect = () => {
 
     }, [size, maskMaterial]);
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (maskMaterial && meshRef.current && meshRef.current.visible) {
             maskMaterial.uniforms.uTime.value += delta / 5;
 

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { createLine } from '../modules/createLine';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
 import { vec3 } from '@react-three/rapier';
 import { HitEffectExpandingRing } from './HitEffectExpandingRingEffects';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 const PlayerDeathExplosionFlashEffect = () => {
     const meshRef = useRef<any>(null);
@@ -70,7 +70,7 @@ const PlayerDeathExplosionFlashEffect = () => {
         }
     }, [instanceCount, radius]);
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (meshRef.current && meshRef.current.visible) {
             effectsTime.current += delta;
             for (let i = 0; i < instanceCount; i++) {
@@ -203,7 +203,7 @@ void main() {
         depthWrite: false, // 关闭深度写入
     })
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (shaderMaterialRef.current && meshRef.current && meshRef.current.visible) {
             // 增加时间
             timeRef.current += delta;
@@ -304,7 +304,7 @@ const PlayerDeathExplosionBoxEffect = () => {
         }
     }, [instanceCount, radius]);
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (meshRef.current && meshRef.current.visible) {
             effectsTime.current += delta;
             const material = meshRef.current.material;

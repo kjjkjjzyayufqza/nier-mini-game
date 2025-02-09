@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState, useContext, use } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
 import { vec3 } from '@react-three/rapier';
 import { PlayerEffectsBoxParticle } from './PlayerEffectsBoxParticle';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 interface ParticlesProps {
     id: number;
@@ -51,7 +51,7 @@ export const PlayerMoveEffects = () => {
     };
 
     const rotationSpeed = 0.075
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (playerEffectsGroupRef.current) {
             particles.current.forEach((particle) => {
                 if (particle.enabled && playerEffectsGroupRef.current) {

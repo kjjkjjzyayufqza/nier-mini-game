@@ -2,8 +2,6 @@ import { cookies } from "next/headers";
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET() {
-  const uri = process.env.MONGODB_URI as string;
-  console.log("uri", uri);
   const cookieStore = await cookies();
   const id = cookieStore.get("id");
   if (id?.value) {

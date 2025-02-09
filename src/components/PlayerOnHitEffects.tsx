@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { extend, useFrame, useLoader } from "@react-three/fiber";
+import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { TextureLoader } from 'three'
 import PubSub from "pubsub-js";
+import { useFixedFrameUpdate } from "../hook/useFixedFrameUpdate";
 
 const PlayerOnHitEffectOutsideExpandingRing = () => {
   const materialRef = useRef<any>(null);
@@ -69,7 +70,7 @@ const PlayerOnHitEffectOutsideExpandingRing = () => {
   }
 
   // 动态更新圆环的半径和透明度
-  useFrame((scene, delta) => {
+  useFixedFrameUpdate((scene, delta) => {
     if (materialRef.current && meshRef.current.visible) {
       const uniforms = materialRef.current.uniforms;
 
@@ -170,7 +171,7 @@ const PlayerOnHitEffectInsideExpandingRing = () => {
   }
 
   // 动态更新圆环的半径和透明度
-  useFrame((scene, delta) => {
+  useFixedFrameUpdate((scene, delta) => {
     if (materialRef.current && meshRef.current.visible) {
       const uniforms = materialRef.current.uniforms;
 
@@ -218,7 +219,7 @@ export const PlayerOnHitLightningEffect = () => {
   const lightningRef = useRef<any>(null);
   const lightRef = useRef<any>(null);
 
-  useFrame((scene, delta) => {
+  useFixedFrameUpdate((scene, delta) => {
     if (groupRef.current && lightningRef.current && lightRef.current &&
       groupRef.current.visible
     ) {
@@ -305,7 +306,7 @@ const PlayerOnHitBlackHole = () => {
     }
   }, [])
 
-  useFrame((scene, delta) => {
+  useFixedFrameUpdate((scene, delta) => {
     if (groupRef.current && groupRef.current.visible) {
       timer.current += delta;
       ringMaterialRef1.current.opacity -= 0.015;

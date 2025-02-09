@@ -103,7 +103,7 @@ export default function ContinueOverlay() {
         {t('notice')}
       </div>
       <div className='p-4 flex flex-col gap-4 min-h-40 max-h-80 overflow-y-scroll custom-scrollbar'>
-        <div className='text-xl text-[#4E4B42] text-clip'>
+        <div className='text-xl text-[#4E4B42] text-clip max-w-sm'>
           {getText}
         </div>
       </div>

@@ -12,7 +12,6 @@ export default function CutsceneOverlay() {
         to: async (next) => {
             await next({ cutscene: 1 });
             if (cutsceneNextActions.length > 0) {
-                console.log('execute action: ', cutsceneNextActions[cutsceneNextActions.length - 1]);
                 executeAction(cutsceneNextActions[cutsceneNextActions.length - 1]);
             }
             await new Promise((resolve) => setTimeout(resolve, 500))

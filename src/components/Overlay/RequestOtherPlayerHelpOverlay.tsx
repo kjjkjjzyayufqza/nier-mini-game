@@ -20,32 +20,36 @@ export default function RequestOtherPlayerHelpOverlay() {
     {
       text: t('yes'),
       onClick: async () => {
-        setShowOverlay('requestHelpOverlay', false)
-        startCutscene("resetEnemiesDataByPhase");
         setButtonDisabled(true)
         setStartCloseAnimation(true)
         setTimeout(() => {
-          respawnPlayer()
-          updatePlayerInfo({
-            needOtherPlayerHelp: true
-          })
+          setShowOverlay('requestHelpOverlay', false)
+          startCutscene("resetEnemiesDataByPhase");
           clearBackgroundDisplayTexts();
           PubSub.publish("updateSceneEffectCount", 100);
-        }, 1000)
+          setTimeout(() => {
+            respawnPlayer()
+            updatePlayerInfo({
+              needOtherPlayerHelp: true
+            })
+          }, 1500)
+        }, 1500)
       },
       isNeedAnimationFinish: false,
     },
     {
       text: t('no'),
       onClick: async () => {
-        setShowOverlay('requestHelpOverlay', false)
-        startCutscene("resetEnemiesDataByPhase");
         setButtonDisabled(true)
         setStartCloseAnimation(true)
         setTimeout(() => {
-          respawnPlayer()
+          setShowOverlay('requestHelpOverlay', false)
+          startCutscene("resetEnemiesDataByPhase");
           clearBackgroundDisplayTexts();
           PubSub.publish("updateSceneEffectCount", 30);
+          setTimeout(() => {
+            respawnPlayer()
+          }, 1500)
         }, 1500)
       },
       isNeedAnimationFinish: false,

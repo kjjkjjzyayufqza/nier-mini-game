@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
 import { BatchedMesh } from 'three';
 import * as THREE from 'three';
 import { euler, vec3 } from '@react-three/rapier';
@@ -9,6 +8,7 @@ import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeome
 import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2';
 import { HitEffectExpandingRingEffects } from './HitEffectExpandingRingEffects';
 import { createLine } from '../modules/createLine';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 export const HitEffects = () => {
 
@@ -311,7 +311,7 @@ export const HitEffects = () => {
     };
 
 
-    useFrame((scene, delta) => {
+    useFixedFrameUpdate((scene, delta) => {
         if (batchedMeshRef.current == null) return
         animationsRef.current.forEach((animation, index) => {
             if (animation.enabled) {

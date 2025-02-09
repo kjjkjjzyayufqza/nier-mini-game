@@ -1,9 +1,9 @@
-import { useFrame } from '@react-three/fiber';
 import { RapierRigidBody, vec3, InstancedRigidBodyProps, InstancedRigidBodies, interactionGroups, CollisionTarget } from '@react-three/rapier';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import usePlayerStore, { IProjectile } from '../store/PlayerStore';
 import * as THREE from 'three';
 import systemInfoStore from '../store/SystemInfoStore';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 export default function PlayerProjectile() {
     const [overRangeLimit, setOverRangeLimit] = useState<"airWall" | "maxRange">("maxRange")
@@ -95,7 +95,7 @@ export default function PlayerProjectile() {
         projectile.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true)
     }
 
-    useFrame(() => {
+    useFixedFrameUpdate(() => {
         if (overRangeLimit == "airWall") return
         projectileRigidBodies.current.forEach((projectileRigidBody) => {
             //如果x或z超出边界，销毁

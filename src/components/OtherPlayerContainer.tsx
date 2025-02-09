@@ -1,5 +1,5 @@
 import { Html } from "@react-three/drei";
-import { RenderCallback, useFrame, useLoader } from "@react-three/fiber";
+import { RenderCallback, useLoader } from "@react-three/fiber";
 import { vec3 } from "@react-three/rapier";
 import { useContext, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
 import React from "react";
+import { useFixedFrameUpdate } from "../hook/useFixedFrameUpdate";
 
 
 const HitExplosionParticle = ({ id, count = 100, spread = 1, size = 1, speedFactor = 2 }: {
@@ -89,7 +89,7 @@ const HitExplosionParticle = ({ id, count = 100, spread = 1, size = 1, speedFact
     }, [count, spread, size]);
 
     // Update time uniform
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (pointsRef.current.visible) {
             if (materialRef.current.uniforms.uTime.value > 1) {
                 pointsRef.current.visible = false;

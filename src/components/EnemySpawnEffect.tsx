@@ -1,8 +1,8 @@
 import * as THREE from "three";
-import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useMemo, useEffect } from "react";
 import { vec3 } from "@react-three/rapier";
 import PubSub from "pubsub-js";
+import { useFixedFrameUpdate } from "../hook/useFixedFrameUpdate";
 
 
 const SpawnLightEffect = ({ id }: { id: string }) => {
@@ -64,7 +64,7 @@ void main() {
 }
 `;
 
-  useFrame((state, delta) => {
+  useFixedFrameUpdate((state, delta) => {
     if (materialRef.current && spawnLightEffectRef.current.visible) {
       elapsedTime.current += delta;
       materialRef.current.uniforms.uTime.value = elapsedTime.current;
@@ -144,7 +144,7 @@ const SpawnParticleEffect = ({ id }: { id: string }) => {
   }, []);
 
   // 动画更新
-  useFrame((state, delta) => {
+  useFixedFrameUpdate((state, delta) => {
     if (!meshRef.current) return;
 
     particles.forEach((particle, i) => {

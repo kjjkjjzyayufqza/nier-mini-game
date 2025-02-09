@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
 import usePlayerStore from '../store/PlayerStore';
 import systemInfoStore from '../store/SystemInfoStore';
+import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 
 export default function PlayTimerCounter() {
     const gameStarted = systemInfoStore(state => state.gameStarted);
@@ -10,7 +10,7 @@ export default function PlayTimerCounter() {
     const timer = useRef<number>(0);
 
 
-    useFrame((state, delta) => {
+    useFixedFrameUpdate((state, delta) => {
         if (gameStarted) {
             timer.current += delta;
         }
