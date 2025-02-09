@@ -1,34 +1,29 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# NieR: Automata | The [E] nding game
 
-## Getting Started
+This project was born when I was learning React Three Fiber.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+![License](https://img.shields.io/badge/license-MIT-green)  
+[![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-%20?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/@react-three/fiber)  
+[![React Three Rapier](https://img.shields.io/badge/React%20Three%20Rapier-%20?style=flat&colorA=000000&colorB=000000)](https://github.com/pmndrs/react-three-rapier)  
+[![Next.js](https://img.shields.io/badge/Next.js-%20?style=flat&colorA=000000&colorB=000000)](https://nextjs.org/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This project is inspired by the **E-Ending of Nier Automata** and was created during my journey of learning **React Three Fiber**. Built with **Next.js**, the game logic is powered by **React Three Rapier**, and post-processing effects like **SSAO** are used to simulate the game's visual style.  
 
-## Learn More
+The project makes extensive use of ChatGPT to generate particle effects and some logic processing.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Preview
+![Demo](/git_image/demo.png)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Acknowledgements
 
-## Deploy on Vercel
+This project uses sound effects from [Mugen87's Nier repository](https://github.com/Mugen87/nier) and references several examples from **React Three Fiber/Drei**. Special thanks to **Mugen87** and **Wawa Sensei** for their inspiring code examples.  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Feel free to contribute! 🚀
