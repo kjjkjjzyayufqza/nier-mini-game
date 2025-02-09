@@ -4,9 +4,10 @@ import Typewriter from "typewriter-effect";
 import usePlayerStore from '../../store/PlayerStore';
 import systemInfoStore from '../../store/SystemInfoStore';
 import { useTranslations } from 'next-intl';
+import { useOverlayStore } from '../../store/OverlayStore';
 
 export default function RequestPlayerInfoOverlay() {
-    const setShowOverlay = systemInfoStore(state => state.setShowOverlay)
+    const setShowOverlay = useOverlayStore(state => state.setShowOverlay)
     const playerShareInfo = usePlayerStore(state => state.playerShareInfo)
     const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
     const [startCloseAnimation, setStartCloseAnimation] = useState<boolean>(false)
@@ -44,7 +45,7 @@ export default function RequestPlayerInfoOverlay() {
             <div className="text-2xl text-[#DAD4BB] bg-[#4E4B42] w-full text-start px-4 py-2">
                 {t('notice')}
             </div>
-            <div className='p-4 flex flex-col gap-4 min-h-40 max-h-80 overflow-y-scroll custom-scrollbar'>
+            <div className='p-4 flex flex-col gap-4 min-h-40 max-h-80 overflow-y-scroll custom-scrollbar max-w-sm'>
                 <div className='text-xl text-[#4E4B42] text-clip'>
                     <Typewriter
                         onInit={(typewriter) => {

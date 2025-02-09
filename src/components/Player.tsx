@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import {  useLoader, useThree } from '@react-three/fiber'
+import { useLoader, useThree } from '@react-three/fiber'
 import { Html, useKeyboardControls } from '@react-three/drei';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { BallCollider, CollisionTarget, interactionGroups, quat, RapierRigidBody, RigidBody, vec3 } from '@react-three/rapier';
@@ -14,6 +14,9 @@ import useAudioStore from '../store/AudioStore';
 import { PlayerMoveEffects } from './PlayerMoveEffects';
 import { useTranslations } from 'next-intl';
 import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
+import { useNotificationStore } from '../store/NotificationStore';
+import { useCutsceneStore } from '../store/CutsceneStore';
+import { useNetworkStore } from '../store/NetworkStore';
 
 const normalizeAngle = (angle: number) => {
     while (angle > Math.PI) angle -= 2 * Math.PI;
@@ -40,10 +43,10 @@ const gamepadManager = new GamepadManager(0.3);
 
 export const Player = () => {
     // console.log('Player')
-    const addNotification = systemInfoStore(state => state.addNotification);
-    const startCutscene = systemInfoStore(state => state.startCutscene);
+    const addNotification = useNotificationStore(state => state.addNotification);
+    const startCutscene = useCutsceneStore(state => state.startCutscene);
     const currentPhase = systemInfoStore(state => state.systemInfo.currentPhase);
-    const notEnablePlayerNameList = systemInfoStore(state => state.notEnablePlayerNameList);
+    const notEnablePlayerNameList = useNetworkStore(state => state.notEnablePlayerNameList);
     const { scene } = useThree();
     const playerInfo = usePlayerStore(state => state.playerInfo);
     const setPlayerShareInfo = usePlayerStore(state => state.setPlayerShareInfo)

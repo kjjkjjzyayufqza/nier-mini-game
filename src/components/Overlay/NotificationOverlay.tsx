@@ -2,11 +2,12 @@ import { animated, useSpring } from '@react-spring/web';
 import React, { useContext, useEffect, useState } from 'react'
 import systemInfoStore from '../../store/SystemInfoStore';
 import { transform } from 'next/dist/build/swc/generated-native';
+import { useNotificationStore } from '../../store/NotificationStore';
 
 const AnimatedDiv = animated('div');
 export default function NotificationOverlay() {
-    const notificationList = systemInfoStore((state) => state.notificationList);
-    const removeNotification = systemInfoStore((state) => state.removeNotification);
+    const notificationList = useNotificationStore((state) => state.notificationList);
+    const removeNotification = useNotificationStore((state) => state.removeNotification);
     if (notificationList.length === 0) {
         return null;
     }

@@ -1,12 +1,13 @@
 import { animated, useSpring } from '@react-spring/web';
 import React, { useContext, useEffect } from 'react'
-import systemInfoStore from '../../store/SystemInfoStore';
 import { useTranslations } from 'next-intl';
+import { useOverlayStore } from '../../store/OverlayStore';
+import { useNetworkStore } from '../../store/NetworkStore';
 
 const AnimatedDiv = animated('div');
 export default function ConnectNetworkNoticeOverlay() {
-    const connectNetworkNoticeOverlay = systemInfoStore((state) => state.isShowOverlay?.connectNetworkNoticeOverlay);
-    const fetchOnlineData = systemInfoStore((state) => state.fetchOnlineData);
+    const connectNetworkNoticeOverlay = useOverlayStore((state) => state.isShowOverlay?.connectNetworkNoticeOverlay);
+    const fetchOnlineData = useNetworkStore((state) => state.fetchOnlineData);
     const [styles, api] = useSpring(() => ({
         from: { opacity: 0 },
     }));

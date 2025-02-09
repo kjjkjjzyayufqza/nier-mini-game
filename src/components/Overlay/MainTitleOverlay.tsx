@@ -8,18 +8,20 @@ import { GamepadManager } from '../../modules/GamepadManager';
 import Link from 'next/link';
 import { useDetectGPU } from '@react-three/drei';
 import { TbDivide } from 'react-icons/tb';
+import { useOverlayStore } from '../../store/OverlayStore';
+import { useNotificationStore } from '../../store/NotificationStore';
 
 const gamepadManager = new GamepadManager();
 const AnimatedDiv = animated('div');
 export default function MainTitleOverlay() {
     const updateSystemInfo = systemInfoStore((state) => state.updateSystemInfo);
-    const setShowOverlay = systemInfoStore((state) => state.setShowOverlay);
+    const setShowOverlay = useOverlayStore((state) => state.setShowOverlay);
     const isButtonClickedRef = useRef<boolean>(false);
     const { play: playAudio, } = useAudioStore();
     const [isGamePadMoved, setIsGamePadMoved] = useState<boolean>(false);
     const postEffects = systemInfoStore((state) => state.postEffects);
     const setPostEffects = systemInfoStore((state) => state.setPostEffects);
-    const addNotification = systemInfoStore((state) => state.addNotification);
+    const addNotification = useNotificationStore((state) => state.addNotification);
     const t = useTranslations()
     const [styles, api] = useSpring(() => ({
         from: { mainTitle: 0, },

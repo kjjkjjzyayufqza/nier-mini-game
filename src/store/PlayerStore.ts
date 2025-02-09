@@ -59,7 +59,7 @@ const initValue: IPlayerInfo = {
 };
 
 const initShareValue: IPlayerShareInfo = {
-    name: "嘿嘿嘿嘿嘿嘿哦哦哦哦哦哦哦哦哦",
+    name: "player",
     content: "",
     region: "",
     points: 0,

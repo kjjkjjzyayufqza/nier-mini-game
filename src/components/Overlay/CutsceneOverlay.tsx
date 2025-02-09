@@ -1,12 +1,13 @@
 import { animated, useSpring } from '@react-spring/web';
 import React, { useContext } from 'react'
 import systemInfoStore from '../../store/SystemInfoStore';
+import { useCutsceneStore } from '../../store/CutsceneStore';
 
 const AnimatedDiv = animated('div');
 export default function CutsceneOverlay() {
-    const endCutscene = systemInfoStore(state => state.endCutscene);
-    const cutsceneNextActions = systemInfoStore(state => state.cutsceneNextActions);
-    const executeAction = systemInfoStore(state => state.executeAction);
+    const endCutscene = useCutsceneStore(state => state.endCutscene);
+    const cutsceneNextActions = useCutsceneStore(state => state.cutsceneNextActions);
+    const executeAction = useCutsceneStore(state => state.executeAction);
     const [styles, api] = useSpring(() => ({
         from: { cutscene: 0 },
         to: async (next) => {

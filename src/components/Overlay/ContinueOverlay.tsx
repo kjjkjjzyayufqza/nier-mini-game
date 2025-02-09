@@ -4,6 +4,9 @@ import { INieRButtonsConfigs, NieRCustomBox } from './NieRCustomBox';
 import systemInfoStore from '../../store/SystemInfoStore';
 import { useTranslations } from 'next-intl';
 import useAudioStore from '../../store/AudioStore';
+import { useCutsceneStore } from '../../store/CutsceneStore';
+import { useOverlayStore } from '../../store/OverlayStore';
+import { useNetworkStore } from '../../store/NetworkStore';
 
 const textList = [
   'giveUpMsg1',
@@ -13,11 +16,10 @@ const textList = [
   'giveUpMsg5',
 ]
 export default function ContinueOverlay() {
-  const startCutscene = systemInfoStore((state) => state.startCutscene);
-  const setShowOverlay = systemInfoStore((state) => state.setShowOverlay);
+  const startCutscene = useCutsceneStore((state) => state.startCutscene);
+  const setShowOverlay = useOverlayStore((state) => state.setShowOverlay);
   const clearBackgroundDisplayTexts = systemInfoStore((state) => state.clearBackgroundDisplayTexts);
-  const currentPhase = systemInfoStore((state) => state.systemInfo.currentPhase);
-  const isConnectedToNetwork = systemInfoStore((state) => state.isConnectedToNetwork);
+  const isConnectedToNetwork = useNetworkStore((state) => state.isConnectedToNetwork);
   const reSetBackgroundDisplayTexts = systemInfoStore((state) => state.reSetBackgroundDisplayTexts);
   const playerShareInfo = usePlayerStore(state => state.playerShareInfo)
   const setGameStarted = systemInfoStore(state => state.setGameStarted)

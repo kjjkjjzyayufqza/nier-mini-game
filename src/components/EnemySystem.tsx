@@ -7,17 +7,17 @@ import { useDebouncedCallback } from 'use-debounce';
 import systemInfoStore from '../store/SystemInfoStore';
 import useAudioStore from '../store/AudioStore';
 import { useTranslations } from 'next-intl';
+import { useCutsceneStore } from '../store/CutsceneStore';
 
 
 export const EnemySystem = React.memo(() => {
     const currentPhase = systemInfoStore(state => state.systemInfo.currentPhase);
     const setImportantPhaseRecord = systemInfoStore(state => state.setImportantPhaseRecord);
     const setCurrentPhase = systemInfoStore(state => state.setCurrentPhase);
-    const startCutscene = systemInfoStore(state => state.startCutscene);
+    const startCutscene = useCutsceneStore(state => state.startCutscene);
     const setPlayerShareInfo = usePlayerStore(state => state.setPlayerShareInfo);
     const updatePlayerInfo = usePlayerStore(state => state.updatePlayerInfo);
     const playerHealth = usePlayerStore(state => state.playerInfo.playerHealth);
-    const addNotification = systemInfoStore(state => state.addNotification);
     const [enemiesMap, setEnemiesMap] = useState<Map<string, EnemyProps>>(new Map());
     const pendingEnemies = useRef<Set<string>>(new Set());
     const pointsRef = useRef<number>(0);

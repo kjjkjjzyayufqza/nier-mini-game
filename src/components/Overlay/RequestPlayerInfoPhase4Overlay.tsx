@@ -6,10 +6,12 @@ import PubSub from 'pubsub-js'
 import usePlayerStore from "../../store/PlayerStore";
 import systemInfoStore from "../../store/SystemInfoStore";
 import { useTranslations } from "next-intl";
+import { useOverlayStore } from "../../store/OverlayStore";
+import { useCutsceneStore } from "../../store/CutsceneStore";
 
 export default function RequestPlayerInfoPhase4Overlay() {
-    const setShowOverlay = systemInfoStore(state => state.setShowOverlay)
-    const startCutscene = systemInfoStore(state => state.startCutscene)
+    const setShowOverlay = useOverlayStore(state => state.setShowOverlay)
+    const startCutscene = useCutsceneStore(state => state.startCutscene)
     const respawnPlayer = usePlayerStore(state => state.respawnPlayer)
     const playerShareInfo = usePlayerStore(state => state.playerShareInfo)
     const [buttonDisabled, setButtonDisabled] = useState(false)

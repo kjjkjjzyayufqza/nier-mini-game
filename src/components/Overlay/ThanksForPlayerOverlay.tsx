@@ -3,9 +3,10 @@ import { INieRButtonsConfigs, NieRCustomBox } from "./NieRCustomBox"
 import { FrameValue } from "@react-spring/web"
 import systemInfoStore from "../../store/SystemInfoStore";
 import { useTranslations } from "next-intl";
+import { useOverlayStore } from "../../store/OverlayStore";
 
 export default function ThanksForPlayerOverlay() {
-    const setShowOverlay = systemInfoStore((state) => state.setShowOverlay)
+    const setShowOverlay = useOverlayStore((state) => state.setShowOverlay)
     const setGameStarted = systemInfoStore((state) => state.setGameStarted)
     const [buttonDisabled, setButtonDisabled] = useState(false)
     const t = useTranslations()

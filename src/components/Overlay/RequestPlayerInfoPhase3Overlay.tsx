@@ -2,11 +2,11 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { INieRButtonsConfigs, NieRCustomBox } from "./NieRCustomBox"
 import Typewriter, { TypewriterClass } from "typewriter-effect";
 import usePlayerStore from "../../store/PlayerStore";
-import systemInfoStore from "../../store/SystemInfoStore";
 import { useTranslations } from "next-intl";
+import { useOverlayStore } from "../../store/OverlayStore";
 
 export default function RequestPlayerInfoPhase3Overlay() {
-    const setShowOverlay = systemInfoStore(state => state.setShowOverlay)
+    const setShowOverlay = useOverlayStore(state => state.setShowOverlay)
     const playerShareInfo = usePlayerStore(state => state.playerShareInfo)
     const [buttonDisabled, setButtonDisabled] = useState(false)
     const [startCloseAnimation, setStartCloseAnimation] = useState(false)

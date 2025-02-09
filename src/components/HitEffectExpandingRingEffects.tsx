@@ -127,8 +127,8 @@ void main() {
 export const HitEffectExpandingRingEffects = () => {
 
   const hitEffectExpandingRingGroupRef = useRef<any>(null);
-  const HIT_EFFECTS_COUNT = 5;
-  const HIT_BOUNDARY_EFFECTS_COUNT = 5
+  const HIT_EFFECTS_COUNT = 10;
+  const HIT_BOUNDARY_EFFECTS_COUNT = 10
   const hitEffectExpandingRingIndex = useRef<number>(0);
   const hitEffectExpandingRingBoundaryIndex = useRef<number>(0);
 

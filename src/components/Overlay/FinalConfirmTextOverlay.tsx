@@ -2,11 +2,12 @@ import { animated, useSpring } from "@react-spring/web"
 import usePlayerStore from "../../store/PlayerStore";
 import systemInfoStore from "../../store/SystemInfoStore";
 import { useTranslations } from "next-intl";
+import { useOverlayStore } from "../../store/OverlayStore";
 
 const AnimatedDiv = animated('div');
 
 export default function FinalConfirmTextOverlay() {
-    const setShowOverlay = systemInfoStore(state => state.setShowOverlay)
+    const setShowOverlay = useOverlayStore(state => state.setShowOverlay)
     const playerShareInfo = usePlayerStore(state => state.playerShareInfo)
     const t = useTranslations()
 

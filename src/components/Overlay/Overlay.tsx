@@ -14,22 +14,23 @@ import FinalConfirmTextOverlay from './FinalConfirmTextOverlay';
 import ThanksForPlayerOverlay from './ThanksForPlayerOverlay';
 import ConnectNetworkNoticeOverlay from './ConnectNetworkNoticeOverlay';
 import NotificationOverlay from './NotificationOverlay';
-import systemInfoStore from '../../store/SystemInfoStore';
+import { useOverlayStore } from '../../store/OverlayStore';
+import { useCutsceneStore } from '../../store/CutsceneStore';
 
 export default function Overlay() {
-    const isShowMainScreen = systemInfoStore((state) => state.isShowOverlay.mainTitleOverlay);
-    const isShowTitleScreen = systemInfoStore((state) => state.isShowOverlay.titleScreenOverlay);
-    const isShowContinueOverlay = systemInfoStore((state) => state.isShowOverlay.continueOverlay);
-    const isShowRequestOtherPlayerHelpOverlay = systemInfoStore((state) => state.isShowOverlay.requestHelpOverlay);
-    const isCutsceneActive = systemInfoStore((state) => state.isCutsceneActive);
-    const isShowOnlineResultOverlay = systemInfoStore((state) => state.isShowOverlay.onlineResultOverlay);
-    const isShowPlayerSummaryOverlay = systemInfoStore((state) => state.isShowOverlay.playerSummaryOverlay);
-    const isShowRequestPlayerInfoOverlay = systemInfoStore((state) => state.isShowOverlay.requestPlayerInfoOverlay);
-    const isShowRequestPlayerInfoPhase2Overlay = systemInfoStore((state) => state.isShowOverlay.requestPlayerInfoPhase2Overlay);
-    const isShowRequestPlayerInfoPhase3Overlay = systemInfoStore((state) => state.isShowOverlay.requestPlayerInfoPhase3Overlay);
-    const isShowRequestPlayerInfoPhase4Overlay = systemInfoStore((state) => state.isShowOverlay.requestPlayerInfoPhase4Overlay);
-    const isShowFinalConfirmTextOverlay = systemInfoStore((state) => state.isShowOverlay.finalConfirmTextOverlay);
-    const isShowThanksForPlayerOverlay = systemInfoStore((state) => state.isShowOverlay.thanksForPlayOverlay);
+    const isShowMainScreen = useOverlayStore((state) => state.isShowOverlay.mainTitleOverlay);
+    const isShowTitleScreen = useOverlayStore((state) => state.isShowOverlay.titleScreenOverlay);
+    const isShowContinueOverlay = useOverlayStore((state) => state.isShowOverlay.continueOverlay);
+    const isShowRequestOtherPlayerHelpOverlay = useOverlayStore((state) => state.isShowOverlay.requestHelpOverlay);
+    const isCutsceneActive = useCutsceneStore((state) => state.isCutsceneActive);
+    const isShowOnlineResultOverlay = useOverlayStore((state) => state.isShowOverlay.onlineResultOverlay);
+    const isShowPlayerSummaryOverlay = useOverlayStore((state) => state.isShowOverlay.playerSummaryOverlay);
+    const isShowRequestPlayerInfoOverlay = useOverlayStore((state) => state.isShowOverlay.requestPlayerInfoOverlay);
+    const isShowRequestPlayerInfoPhase2Overlay = useOverlayStore((state) => state.isShowOverlay.requestPlayerInfoPhase2Overlay);
+    const isShowRequestPlayerInfoPhase3Overlay = useOverlayStore((state) => state.isShowOverlay.requestPlayerInfoPhase3Overlay);
+    const isShowRequestPlayerInfoPhase4Overlay = useOverlayStore((state) => state.isShowOverlay.requestPlayerInfoPhase4Overlay);
+    const isShowFinalConfirmTextOverlay = useOverlayStore((state) => state.isShowOverlay.finalConfirmTextOverlay);
+    const isShowThanksForPlayerOverlay = useOverlayStore((state) => state.isShowOverlay.thanksForPlayOverlay);
     return (
         <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center select-none flex-col pointer-events-none">
             <ConnectNetworkNoticeOverlay />

@@ -7,6 +7,9 @@ import { INieRButtonsConfigs, NieRCustomBox } from './NieRCustomBox';
 import usePlayerStore from '../../store/PlayerStore';
 import systemInfoStore from '../../store/SystemInfoStore';
 import { useTranslations } from 'next-intl';
+import { useOverlayStore } from '../../store/OverlayStore';
+import { useNetworkStore } from '../../store/NetworkStore';
+import { useCutsceneStore } from '../../store/CutsceneStore';
 
 export interface IPlayerResult {
   id: string;
@@ -19,11 +22,11 @@ const AnimatedDiv = animated('div');
 const AnimatedP = animated('p');
 
 export default function OnlineResultOverlay() {
-  const setShowOverlay = systemInfoStore(state => state.setShowOverlay);
-  const onlineData = systemInfoStore(state => state.onlineData);
+  const setShowOverlay = useOverlayStore(state => state.setShowOverlay);
+  const onlineData = useNetworkStore(state => state.onlineData);
   const isFinaleConfirmed = systemInfoStore(state => state.isFinaleConfirmed);
   const startDestroyOnlineResultAnimation = systemInfoStore(state => state.startDestroyOnlineResultAnimation);
-  const startCutscene = systemInfoStore(state => state.startCutscene);
+  const startCutscene = useCutsceneStore(state => state.startCutscene);
   const [resultData, setResultData] = useState<IPlayerResult[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const targetItemRef = useRef<HTMLDivElement | null>(null);

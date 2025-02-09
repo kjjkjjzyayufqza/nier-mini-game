@@ -5,13 +5,15 @@ import { animated, useSpring, useSprings } from '@react-spring/web';
 import systemInfoStore from '../../store/SystemInfoStore';
 import { useTranslations } from 'next-intl';
 import useAudioStore from '../../store/AudioStore';
+import { useOverlayStore } from '../../store/OverlayStore';
+import { useNotificationStore } from '../../store/NotificationStore';
 
 const AnimatedDiv = animated('div');
 export default function PlayerSummaryOverlay() {
     const startDestroyPlayerSummaryAnimation = systemInfoStore(state => state.startDestroyOnlineResultAnimation)
-    const setShowOverlay = systemInfoStore(state => state.setShowOverlay)
+    const setShowOverlay = useOverlayStore(state => state.setShowOverlay)
     const setPlayerShareInfo = usePlayerStore(state => state.setPlayerShareInfo)
-    const addNotification = systemInfoStore(state => state.addNotification)
+    const addNotification = useNotificationStore(state => state.addNotification)
     const playerShareInfo = usePlayerStore(state => state.playerShareInfo)
     const [startCloseAnimation, setStartCloseAnimation] = useState<boolean>(false)
     const [formValue, setFormValue] = useState<{ name: string }>({

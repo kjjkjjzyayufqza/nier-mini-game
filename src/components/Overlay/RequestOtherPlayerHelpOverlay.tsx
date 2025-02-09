@@ -3,12 +3,15 @@ import usePlayerStore from '../../store/PlayerStore';
 import { INieRButtonsConfigs, NieRCustomBox } from './NieRCustomBox';
 import systemInfoStore from '../../store/SystemInfoStore';
 import { useTranslations } from 'next-intl';
+import { useOverlayStore } from '../../store/OverlayStore';
+import { useCutsceneStore } from '../../store/CutsceneStore';
+import { useNetworkStore } from '../../store/NetworkStore';
 
 export default function RequestOtherPlayerHelpOverlay() {
-  const setShowOverlay = systemInfoStore(state => state.setShowOverlay)
-  const startCutscene = systemInfoStore(state => state.startCutscene)
+  const setShowOverlay = useOverlayStore(state => state.setShowOverlay)
+  const startCutscene = useCutsceneStore(state => state.startCutscene)
   const clearBackgroundDisplayTexts = systemInfoStore(state => state.clearBackgroundDisplayTexts)
-  const notEnablePlayerNameList = systemInfoStore(state => state.notEnablePlayerNameList)
+  const notEnablePlayerNameList = useNetworkStore(state => state.notEnablePlayerNameList)
   const playerInfo = usePlayerStore(state => state.playerInfo)
   const respawnPlayer = usePlayerStore(state => state.respawnPlayer)
   const updatePlayerInfo = usePlayerStore(state => state.updatePlayerInfo)

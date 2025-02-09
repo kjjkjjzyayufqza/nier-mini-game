@@ -2,9 +2,10 @@ import { useContext, useState } from "react"
 import { INieRButtonsConfigs, NieRCustomBox } from "./NieRCustomBox"
 import systemInfoStore from "../../store/SystemInfoStore";
 import { useTranslations } from "next-intl";
+import { useOverlayStore } from "../../store/OverlayStore";
 
 export default function RequestPlayerInfoPhase2Overlay() {
-    const setShowOverlay = systemInfoStore((state) => state.setShowOverlay)
+    const setShowOverlay = useOverlayStore((state) => state.setShowOverlay)
     const [startCloseAnimation, setStartCloseAnimation] = useState(false)
     const [buttonDisabled, setButtonDisabled] = useState(false)
     const [formValue, setFormValue] = useState({

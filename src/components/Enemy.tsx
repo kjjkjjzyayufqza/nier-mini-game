@@ -365,6 +365,8 @@ export const Enemy = ({
     }
 
     const enemyOnHit = (target: CollisionTarget, other: CollisionTarget) => {
+        if (healthRef.current <= 0) return
+
         //如果是玩家则不处理
         if (other.colliderObject?.name == 'player_collider') {
             return

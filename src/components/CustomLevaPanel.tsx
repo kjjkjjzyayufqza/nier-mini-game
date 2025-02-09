@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { button, Leva, useControls } from 'leva'
 import { Html } from '@react-three/drei'
 import { Schema } from 'leva/dist/declarations/src/types/public';
@@ -7,6 +7,7 @@ import systemInfoStore from '../store/SystemInfoStore';
 import useAudioStore from '../store/AudioStore';
 import { EmptyEnemyData, EnemyData } from '../data/EnemyData';
 import { filePicker } from "leva-file-picker";
+import { useNotificationStore } from '../store/NotificationStore';
 
 export default function CustomLevaPanel() {
     const setCurrentPhase = systemInfoStore(state => state.setCurrentPhase)
@@ -16,7 +17,7 @@ export default function CustomLevaPanel() {
     const resetPlayerInfo = usePlayerStore(state => state.resetPlayerInfo)
     const needOtherPlayerHelp = usePlayerStore(state => state.playerInfo.needOtherPlayerHelp)
     const { initVolume, play: playAudio, setAllVolume, stop: stopAudio, addSound, removeSound, removeSoundByType, sounds } = useAudioStore();
-    const addNotification = systemInfoStore(state => state.addNotification)
+    const addNotification = useNotificationStore(state => state.addNotification)
     const firstLoad = useRef(true)
     const phaseData = useMemo(() => {
         return Array.from(new Set(EnemyData.map(e => e.phase)))
@@ -92,6 +93,7 @@ export default function CustomLevaPanel() {
                 value: needOtherPlayerHelp,
                 onChange: (v) => {
                     if (firstLoad.current) return
+                    console.log(v)
                     updatePlayerInfo({ needOtherPlayerHelp: v })
                     addNotification(`Set other player to help: ${v}`)
                 }
@@ -110,6 +112,10 @@ export default function CustomLevaPanel() {
 
     const pSystem = useControls('System', systemOptions)
     const pDebug = useControls('Debug', debugOptions)
+
+    useEffect(() => {
+        firstLoad.current = false
+    }, [])
 
     return (
         <></>
