@@ -111,7 +111,7 @@ export default function MainTitleOverlay() {
                         <div className='text-5xl text-[#E5E5E3] max-w-2xl'>
                             {t('mainTitle')}
                         </div>
-                        <div className='text-xl text-[#E5E5E3]'>
+                        <div className='text-xl text-[#E5E5E3] pointer-events-auto'>
                             <a href="https://github.com/kjjkjjzyayufqza/nier-mini-game" className='text-[#E5E5E3 underline'>Source</a>
                         </div>
                     </div>
