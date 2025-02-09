@@ -103,6 +103,7 @@ export default function PlayerSummaryOverlay() {
         {
             text: t('finish'),
             onClick: async () => {
+                if (startDestroyPlayerSummaryAnimation) return
                 if (formValue.name == '') return
                 handleSavePlayerSummary()
             },
@@ -142,7 +143,7 @@ export default function PlayerSummaryOverlay() {
     }
 
     return (
-        <NieRCustomBox buttonsConfigs={buttonsConfigs} startCloseAnimation={startCloseAnimation} buttonDisabled={buttonDisabled}>
+        <NieRCustomBox buttonsConfigs={buttonsConfigs} startCloseAnimation={startCloseAnimation} buttonDisabled={buttonDisabled} disableGamePad>
             <div className="text-2xl text-[#DAD4BB] bg-[#4E4B42] w-full text-start px-4 py-2">
                 {t('notice')}
             </div>

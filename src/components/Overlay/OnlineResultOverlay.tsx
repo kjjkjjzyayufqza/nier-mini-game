@@ -17,7 +17,6 @@ export interface IPlayerResult {
   score: number;
 }
 
-const gamepadManager = new GamepadManager();
 const AnimatedDiv = animated('div');
 const AnimatedP = animated('p');
 
@@ -39,6 +38,7 @@ export default function OnlineResultOverlay() {
     {
       text: t('finish'),
       onClick: () => {
+        if (startDestroyOnlineResultAnimation) return
         setButtonDisabled(true)
         setStartCloseAnimation(true)
         setTimeout(() => {
