@@ -11,6 +11,7 @@ export default function StartTitleOverlay() {
     const setCurrentPhase = systemInfoStore(state => state.setCurrentPhase)
     const respawnPlayer = usePlayerStore(state => state.respawnPlayer)
     const setShowOverlay = useOverlayStore(state => state.setShowOverlay)
+    const { stop: stopAudio, play: playAudio } = useAudioStore();
     const [styles, api] = useSpring(() => ({
         from: { titleOpacity: 0, subTitleOpacity: 0 },
         to: async (next) => {
