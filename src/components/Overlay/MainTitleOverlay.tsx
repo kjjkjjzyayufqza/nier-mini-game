@@ -104,7 +104,7 @@ export default function MainTitleOverlay() {
     }, [GPUTier])
 
     return (
-        <AnimatedDiv className='absolute md:flex justify-between items-center w-full h-full container mx-auto' style={{ opacity: styles.mainTitle }}>
+        <AnimatedDiv className='absolute md:flex p-4 md:p-0 justify-between items-center w-full h-full container mx-auto overflow-auto pointer-events-auto' style={{ opacity: styles.mainTitle }}>
             <div className='flex flex-col gap-20'>
                 <div className='flex flex-col gap-20'>
                     <div className='flex flex-col'>
@@ -168,7 +168,7 @@ export default function MainTitleOverlay() {
                     </div>
                 </div>
             </div>
-            <div>
+            <div className='py-5 md:py-0'>
                 <YoRHaButton
                     onClick={() => {
                         handleClickStart()
