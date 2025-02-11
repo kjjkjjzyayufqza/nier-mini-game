@@ -1,26 +1,64 @@
 import { Html } from "@react-three/drei";
 import { RenderCallback, useLoader } from "@react-three/fiber";
 import { vec3 } from "@react-three/rapier";
-import { useContext, useEffect, useMemo, useRef } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 import usePlayerStore from "../store/PlayerStore";
 import { useFixedFrameUpdate } from "../hook/useFixedFrameUpdate";
+import { LevaInputs, Schema } from "leva/plugin";
+import { useControls } from "leva";
 
 
 const HexagonContainer = () => {
-    const radius = 0.15; // 六边形的半径
+    const [radius, setRadius] = useState<number>(0.15) // 六边形的半径
     const { nodes: playerNodes, scene: playerModel } = useLoader(GLTFLoader, "./nier/player.glb");
     const hexagonContainerRef = useRef<any>(null);
     const otherPlayerRefs = useRef<any[]>([]);
     const destroyOtherPlayerIndexRefs = useRef<number>(0);
-    const rotationSpeed = 0.0579;
+    const [rotationSpeed, setRotationSpeed] = useState<number>(0.0579);
+    const [maxPlayerCount, setMaxPlayerCount] = useState<number>(6);
+    const playerOptions = useCallback(() => {
+        const value: Schema = {
+            helpPlayerCount: {
+                label: "Other Player Count",
+                value: maxPlayerCount,
+                type: LevaInputs.NUMBER,
+                min: 6,
+                max: 60,
+                step: 1,
+                onChange: (v) => {
+                    setMaxPlayerCount(v)
+                }
+            },
+            centerRange: {
+                label: "Center Range",
+                value: radius,
+                min: 0.15,
+                max: 1,
+                onChange: (v) => {
+                    setRadius(v)
+                }
+            },
+            rotationSpeed: {
+                label: "Rotation Speed",
+                value: rotationSpeed,
+                min: 0,
+                max: 0.20,
+                onChange: (v) => {
+                    setRotationSpeed(v)
+                }
+            }
+        }
+        return value
+    }, [])
+    const pPlayer = useControls('Player', playerOptions)
 
     const hexagon = useMemo(() => {
         const shape = new THREE.Shape();
-        for (let i = 0; i < 6; i++) {
-            const angle = (i / 6) * Math.PI * 2;
+        for (let i = 0; i < maxPlayerCount; i++) {
+            const angle = (i / maxPlayerCount) * Math.PI * 2;
             const x = Math.cos(angle) * radius;
             const y = Math.sin(angle) * radius;
 
@@ -32,18 +70,18 @@ const HexagonContainer = () => {
         }
         shape.closePath(); // 闭合路径
         return shape;
-    }, [radius])
+    }, [radius, maxPlayerCount])
 
     const vertices = useMemo(() => {
         const points = [];
-        for (let i = 0; i < 6; i++) {
-            const angle = (i / 6) * Math.PI * 2; // 每个顶点的角度
+        for (let i = 0; i < maxPlayerCount; i++) {
+            const angle = (i / maxPlayerCount) * Math.PI * 2; // 每个顶点的角度
             const x = Math.cos(angle) * radius;
             const y = Math.sin(angle) * radius;
             points.push([x, y, 0]); // z 坐标为 0
         }
         return points;
-    }, [radius]);
+    }, [radius, maxPlayerCount]);
 
     const clonedModels = useMemo(() => {
         return vertices.map(() => clone(playerModel));
@@ -71,6 +109,7 @@ const HexagonContainer = () => {
             }
             // 如果otherPlayer的位置不是初始位置，更新每个 otherPlayer 的位置
             otherPlayerRefs.current.forEach((ref: any, index: number) => {
+                if (!vertices[index]) return;
                 const targetPosition = vec3({ x: vertices[index][0], y: vertices[index][1], z: vertices[index][2] });
                 // 如果当前位置与目标位置不同，则缓慢移动过去
                 if (!ref.position.equals(targetPosition) && ref.position.distanceTo(targetPosition) > 0.01) {
@@ -100,13 +139,51 @@ const HexagonContainer = () => {
             otherPlayerRefs.current[index].userData = {
                 ready: false
             }
-            destroyOtherPlayerIndexRefs.current = (index + 1) % 6;
+            destroyOtherPlayerIndexRefs.current = (index + 1) % maxPlayerCount;
         })
 
         return () => {
             PubSub.unsubscribe(updateOtherPlayerPositionToken);
         }
     }, [])
+
+    useEffect(() => {
+        // 当 maxPlayerCount 改变时，检查是否需要清理多余的玩家
+        if (otherPlayerRefs.current.length > maxPlayerCount) {
+            // 找出多余的玩家
+            const extraPlayers = otherPlayerRefs.current.slice(maxPlayerCount);
+
+            // 清理多余的玩家
+            extraPlayers.forEach((ref, index) => {
+                if (ref) {
+                    // 从场景中移除
+                    ref.parent.remove(ref);
+
+                    // 清理模型资源
+                    const primitive = ref.children[0]; // 获取 <primitive> 对象
+                    if (primitive && primitive.object) {
+                        primitive.object.traverse((child: any) => {
+                            if (child.isMesh) {
+                                if (child.geometry) child.geometry.dispose(); // 释放几何体
+                                if (child.material) {
+                                    // 如果材质是数组，逐个释放
+                                    if (Array.isArray(child.material)) {
+                                        child.material.forEach((mat: any) => mat.dispose());
+                                    } else {
+                                        child.material.dispose(); // 释放材质
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            // 更新 refs 数组
+            otherPlayerRefs.current = otherPlayerRefs.current.slice(0, maxPlayerCount);
+        }
+    }, [maxPlayerCount]);
+
 
     return (
         <group rotation={[Math.PI / -2, 0, 0]} ref={hexagonContainerRef} name={"OtherPlayerContainer"}>

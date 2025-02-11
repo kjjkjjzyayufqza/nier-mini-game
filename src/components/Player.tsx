@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLoader, useThree } from '@react-three/fiber'
 import { Html, useKeyboardControls } from '@react-three/drei';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
@@ -17,6 +17,8 @@ import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
 import { useNotificationStore } from '../store/NotificationStore';
 import { useCutsceneStore } from '../store/CutsceneStore';
 import { useNetworkStore } from '../store/NetworkStore';
+import { useControls } from 'leva';
+import { Schema } from 'leva/plugin';
 
 const normalizeAngle = (angle: number) => {
     while (angle > Math.PI) angle -= 2 * Math.PI;
@@ -57,7 +59,7 @@ export const Player = () => {
     const playerRotationTarget = useRef<any>(0);
     const rotationTarget = useRef<any>(0);
     const [, get] = useKeyboardControls();
-    const speed = 0.7;
+    const [speed, setSpeed] = useState<number>(0.6);
     const { nodes: playerNodes, scene: playerModel } = useLoader(GLTFLoader, "./nier/player.glb");
     const effectStartPosition = useRef<THREE.Vector3>(vec3({ x: 0, y: 0, z: 0 }));
     const effectTargetPosition = useRef<THREE.Vector3>(vec3({ x: 0, y: 0, z: 0 }));
@@ -70,7 +72,7 @@ export const Player = () => {
     const isPlayerOnHit = useRef<boolean>(false)
     const playerInvincibilityTimeAccumulatedTime = useRef<number>(0)
     const playerOnHitColorReturnNormal = useRef<boolean>(false)
-    const shootingInterval = 0.0986
+    const [shootingInterval, setShootingInterval] = useState<number>(0.0986)
     const disableMove = useRef<boolean>(false)
     const resetPlayerPositionRef = useRef<boolean>(false)
     const playerLocalSummery = useRef<{
@@ -82,6 +84,31 @@ export const Player = () => {
     })
     const { play: playAudio, setVolume, stop: stopAudio } = useAudioStore();
     const t = useTranslations()
+    const playerOptions = useCallback(() => {
+        const value: Schema = {
+            moveSpeed: {
+                label: "Move Speed",
+                value: speed,
+                min: 0,
+                max: 2,
+                onChange: (v) => {
+                    setSpeed(v)
+                }
+            },
+            shootingInterval: {
+                label: "Shooting Interval",
+                value: shootingInterval,
+                min: 0,
+                max: 1,
+                onChange: (v) => {
+                    setShootingInterval(v)
+                }
+            }
+        }
+        return value
+    }, [])
+    const pPlayer = useControls('Player', playerOptions)
+
 
     const onMouseDown = (e: any) => {
         if (e.button === 0) {
