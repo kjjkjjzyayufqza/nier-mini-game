@@ -147,44 +147,6 @@ const HexagonContainer = () => {
         }
     }, [])
 
-    useEffect(() => {
-        // 当 maxPlayerCount 改变时，检查是否需要清理多余的玩家
-        if (otherPlayerRefs.current.length > maxPlayerCount) {
-            // 找出多余的玩家
-            const extraPlayers = otherPlayerRefs.current.slice(maxPlayerCount);
-
-            // 清理多余的玩家
-            extraPlayers.forEach((ref, index) => {
-                if (ref) {
-                    // 从场景中移除
-                    ref.parent.remove(ref);
-
-                    // 清理模型资源
-                    const primitive = ref.children[0]; // 获取 <primitive> 对象
-                    if (primitive && primitive.object) {
-                        primitive.object.traverse((child: any) => {
-                            if (child.isMesh) {
-                                if (child.geometry) child.geometry.dispose(); // 释放几何体
-                                if (child.material) {
-                                    // 如果材质是数组，逐个释放
-                                    if (Array.isArray(child.material)) {
-                                        child.material.forEach((mat: any) => mat.dispose());
-                                    } else {
-                                        child.material.dispose(); // 释放材质
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-
-            // 更新 refs 数组
-            otherPlayerRefs.current = otherPlayerRefs.current.slice(0, maxPlayerCount);
-        }
-    }, [maxPlayerCount]);
-
-
     return (
         <group rotation={[Math.PI / -2, 0, 0]} ref={hexagonContainerRef} name={"OtherPlayerContainer"}>
             <mesh>
