@@ -1013,8 +1013,6 @@ export const EnemyData: EnemyProps[] = [
     phase: "21",
     nextPhase: "22",
     childrenIds: [],
-    isNeedChidAllDead: true,
-    isImportantPhase: true,
     strongType: StrongType.MEDIUM,
     points: 200,
     health: 50,
@@ -1678,7 +1676,7 @@ export const EnemyData: EnemyProps[] = [
     strongType: StrongType.EXTREME,
     points: 300,
     health: 200,
-    spawnDelay: 10,
+    spawnDelay: 3,
   },
   {
     id: "enemy_38_2",

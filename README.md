@@ -21,6 +21,10 @@ The project makes extensive use of ChatGPT to generate particle effects and some
 
 ## Preview
 ![Demo](/git_image/demo.png)
+![Demo1](/git_image/demo1.png)
+![Demo2](/git_image/demo2.png)
+![Demo3](/git_image/demo3.png)
+![Demo4](/git_image/demo4.png)
 
 ## Acknowledgements
 
