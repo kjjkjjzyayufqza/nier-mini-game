@@ -18,6 +18,7 @@ import { EnemySystem } from './EnemySystem';
 import { Schema } from 'leva/dist/declarations/src/types/public';
 import systemInfoStore from '../store/SystemInfoStore';
 import { isGameClear } from '../lib/isGameClear';
+import PostEffectComposer from './PostEffectComposer';
 
 const keyboardMap = [
   { name: "forward", keys: ["KeyW"] },
@@ -108,6 +109,7 @@ export default function CanvasContainer() {
         {pDebug.freeCamera && <OrbitControls />}
         <SceneBackgroundText />
         <SceneEffects />
+        {/* {postEffects && <PostEffectComposer />} */}
         {postEffects && <ThreeEffects />}
         {pDebug.r3f_perf && <Perf position='top-left' style={{ marginTop: "3rem" }} />}
         {pDebug.threeStats && <Stats />}
