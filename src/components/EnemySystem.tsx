@@ -30,29 +30,13 @@ export const EnemySystem = React.memo(() => {
             if (enemy.isImportantPhase) {
                 setImportantPhaseRecord(enemy.phase);
             }
-            if (enemy.spawnDelay) {
-                // 创建带延迟的定时器
-                const timer = setTimeout(() => {
-                    setEnemiesMap(prev => {
-                        const newMap = new Map(prev);
-                        if (!newMap.has(enemy.id)) {
-                            newMap.set(enemy.id, enemy);
-                        }
-                        return newMap;
-                    });
-                }, enemy.spawnDelay * 1000);
-
-                timersRef.current.add(timer);
-            } else {
-                // 立即添加
-                setEnemiesMap(prev => {
-                    const newMap = new Map(prev);
-                    if (!newMap.has(enemy.id)) {
-                        newMap.set(enemy.id, enemy);
-                    }
-                    return newMap;
-                });
-            }
+            setEnemiesMap(prev => {
+                const newMap = new Map(prev);
+                if (!newMap.has(enemy.id)) {
+                    newMap.set(enemy.id, enemy);
+                }
+                return newMap;
+            });
         });
     }
 

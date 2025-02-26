@@ -4,11 +4,14 @@ import usePlayerStore, { IProjectile } from '../store/PlayerStore';
 import * as THREE from 'three';
 import systemInfoStore from '../store/SystemInfoStore';
 import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
+import useGamePauseStore from '../store/GamePauseStore';
+import { useFrame } from '@react-three/fiber';
 
 export default function PlayerProjectile() {
     const [overRangeLimit, setOverRangeLimit] = useState<"airWall" | "maxRange">("maxRange")
     const projectileRigidBodies = useRef<RapierRigidBody[]>([]);
     const projectilesIndex = useRef<number>(-1)
+    const originalVelocities = useRef<{ [key: number]: { x: number; y: number; z: number } }>({});
     const playerInstancedMeshRef = useRef<THREE.InstancedMesh>(null);
     const maxProjectilesRange = { x: 5, z: 5 }
     const projectileSpeed = 2
@@ -70,6 +73,11 @@ export default function PlayerProjectile() {
             z: velocity.z
         }, true);
         projectileRigidBodies.current[projectilesIndex.current].setAngvel({ x: 0, y: 0, z: 0 }, true);
+        originalVelocities.current[projectilesIndex.current] = {
+            x: velocity.x,
+            y: velocity.y,
+            z: velocity.z
+        };
     }
 
     const onHit = (manifold: any, target: CollisionTarget, other: CollisionTarget) => {
@@ -107,6 +115,22 @@ export default function PlayerProjectile() {
             }
         })
     })
+
+    const handleSubscribePausedProjectile = (isPaused: boolean) => {
+        projectileRigidBodies.current.forEach((projectileRigidBody, index) => {
+            if (!projectileRigidBody.isEnabled()) return
+            if (isPaused) {
+                projectileRigidBody.setLinvel(vec3({ x: 0, y: 0, z: 0 }), true)
+            } else {
+                const originalVel = originalVelocities.current[index];
+                if (originalVel) {
+                    projectileRigidBody.setLinvel(originalVel, true);
+                }
+            }
+        })
+    }
+    const isPausedSubscribe = useGamePauseStore.subscribe(state => state.isPaused, handleSubscribePausedProjectile);
+
 
     useEffect(() => {
         const shootProjectileToken = PubSub.subscribe('shootProjectile', (msg: string, data: IProjectile) => {
@@ -152,12 +176,6 @@ export default function PlayerProjectile() {
             }}
             onCollisionEnter={({ manifold, target, other }) => {
                 onHit(manifold, target, other)
-                // projectileRigidBodies.current.forEach((projectile) => {
-                //     if ((projectile.userData as any)?.id == target.rigidBodyObject?.userData.id) {
-                //         const position = manifold.solverContactPoint(0)
-                //         onHit(vec3({ x: position.x, y: position.y, z: position.z }), other.rigidBodyObject?.userData, other.rigidBody?.isEnabled(), projectile)
-                //     }
-                // })
             }}
         >
             <instancedMesh args={[undefined, undefined, PLAYER_PROJECTILE_COUNT]} count={PLAYER_PROJECTILE_COUNT} ref={playerInstancedMeshRef}>

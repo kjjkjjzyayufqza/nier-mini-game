@@ -16,6 +16,7 @@ import ConnectNetworkNoticeOverlay from './ConnectNetworkNoticeOverlay';
 import NotificationOverlay from './NotificationOverlay';
 import { useOverlayStore } from '../../store/OverlayStore';
 import { useCutsceneStore } from '../../store/CutsceneStore';
+import GamePauseOverlay from './GamePauseOverlay';
 
 export default function Overlay() {
     const isShowMainScreen = useOverlayStore((state) => state.isShowOverlay.mainTitleOverlay);
@@ -35,6 +36,7 @@ export default function Overlay() {
         <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center select-none flex-col pointer-events-none">
             <ConnectNetworkNoticeOverlay />
             <NotificationOverlay />
+            <GamePauseOverlay />
             {isShowMainScreen && <MainTitleOverlay />}
             {isShowTitleScreen && <StartTitleOverlay />}
             {isShowContinueOverlay && <ContinueOverlay />}

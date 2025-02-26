@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { IEnemyProjectile, IProjectile } from '../store/PlayerStore';
 import systemInfoStore from '../store/SystemInfoStore';
 import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate';
+import useGamePauseStore from '../store/GamePauseStore';
 
 export default function EnemyUnbrokenProjectile() {
     const enemyUnbrokenProjectileRigidBodies = useRef<RapierRigidBody[]>([]);
@@ -17,6 +18,7 @@ export default function EnemyUnbrokenProjectile() {
         minY: -1,
         maxY: -100
     }
+    const originalVelocities = useRef<{ [key: number]: { x: number; y: number; z: number } }>({});
 
     const vertexShader = `
 varying vec2 vUv;
@@ -111,6 +113,11 @@ void main() {
             y: velocity.y,
             z: velocity.z
         }, true);
+        originalVelocities.current[projectilesIndex.current] = {
+            x: velocity.x,
+            y: velocity.y,
+            z: velocity.z
+        };
     }
 
 
@@ -130,6 +137,21 @@ void main() {
         }
         resetProjectileDirection(target.rigidBody)
     }
+
+    const handleSubscribePausedProjectile = (isPaused: boolean) => {
+        enemyUnbrokenProjectileRigidBodies.current.forEach((projectileRigidBody, index) => {
+            if (!projectileRigidBody.isEnabled()) return
+            if (isPaused) {
+                projectileRigidBody.setLinvel(vec3({ x: 0, y: 0, z: 0 }), true)
+            } else {
+                const originalVel = originalVelocities.current[index];
+                if (originalVel) {
+                    projectileRigidBody.setLinvel(originalVel, true);
+                }
+            }
+        })
+    }
+    const isPausedSubscribe = useGamePauseStore.subscribe(state => state.isPaused, handleSubscribePausedProjectile);
 
     useEffect(() => {
         if (enemyUnbrokenInstancesMeshRef.current) {

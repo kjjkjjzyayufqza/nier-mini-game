@@ -19,6 +19,7 @@ import { useCutsceneStore } from '../store/CutsceneStore';
 import { useNetworkStore } from '../store/NetworkStore';
 import { useControls } from 'leva';
 import { Schema } from 'leva/plugin';
+import useGamePauseStore from '../store/GamePauseStore';
 
 const normalizeAngle = (angle: number) => {
     while (angle > Math.PI) angle -= 2 * Math.PI;
@@ -84,6 +85,8 @@ export const Player = () => {
     })
     const { play: playAudio, setVolume, stop: stopAudio } = useAudioStore();
     const t = useTranslations()
+    const isPaused = useGamePauseStore(state => state.isPaused)
+
     const playerOptions = useCallback(() => {
         const value: Schema = {
             moveSpeed: {
@@ -184,6 +187,7 @@ export const Player = () => {
     const lastShotTime = useRef(0); // 用于存储上次射击时间
     const playerEffectsSpawnTime = useRef(0); // 用于存储上次生成玩家特效的时间
     useFixedFrameUpdate((state, delta) => {
+        if (isPaused) return
         if (disableMove.current) {
             return
         }
@@ -223,6 +227,7 @@ export const Player = () => {
     const lookBottom = new THREE.Vector3(0, 1, 0)
 
     useFixedFrameUpdate((state, delta) => {
+        if (isPaused) return
         if (playerInfo.playerHealth <= 0) return
         if (disableMove.current) return
         if (rb.current) {
@@ -460,6 +465,7 @@ export const Player = () => {
     }
     const newPosition = vec3({ x: 0, y: 0, z: 0 });
     useFixedFrameUpdate(() => {
+        if (isPaused) return
         if (rb.current && resetPlayerPositionRef.current) {
             const playerRb = rb.current;
             if (!vec3(playerRb.translation()).equals(newPosition)) {
@@ -508,6 +514,13 @@ export const Player = () => {
             })
         }
     }, [currentPhase])
+
+    const resetPlayerVelocity = () => {
+        if (rb.current) {
+            rb.current.setLinvel(vec3({ x: 0, y: 0, z: 0 }), true)
+        }
+    }
+    const resetPlayerVelocitySub = useGamePauseStore.subscribe(state => state.isPaused, resetPlayerVelocity);
 
     return (
         <>

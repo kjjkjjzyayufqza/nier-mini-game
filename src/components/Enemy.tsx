@@ -8,6 +8,8 @@ import { EnemyProps, StrongType } from '../data/EnemyData'
 import useAudioStore from '../store/AudioStore'
 import { animated, useSpring } from '@react-spring/web'
 import { useFixedFrameUpdate } from '../hook/useFixedFrameUpdate'
+import { useTimeout } from 'react-use'
+import useGamePauseStore from '../store/GamePauseStore'
 
 export const Enemy = ({
     id,
@@ -24,15 +26,16 @@ export const Enemy = ({
     strongType,
     health,
     points,
+    spawnDelay,
     onDeath = () => { }
 }: EnemyProps) => {
     const [debugOptions, setDebugOptions] = useState({
         shootPortVisible: false,
         enableShooting: enableShoot
     })
+    const [spawnDelayReady, spawnDelayCancel] = useTimeout((spawnDelay || 0) * 1000);
     const { play: playAudio, setVolume, stop: stopAudio } = useAudioStore();
     const enemyRef = useRef<any>(null)
-    const enemyShootPortGroupRef = useRef<any>(null)
     const textRef = useRef<any>(null)
     const cuboidColliderRef = useRef<any>(null)
     const [cuboidSize, setCuboidSize] = useState<[number, number, number]>([0, 0, 0]);
@@ -58,8 +61,18 @@ export const Enemy = ({
     };
     const healthRef = useRef<number>(health)
     const [finalConfirmEnemyHealth, setFinalConfirmEnemyHealth] = useState<number>(health)
+    const isPauseRef = useRef<boolean>(false)
     const { viewport, size } = useThree();
     const spawnEffect = useRef<boolean>(false)
+    const tempTimerRef = useRef<{
+        accumulativeTime: number,
+        pauseAtTime: number,
+        timer: any
+    }>({
+        accumulativeTime: 0,
+        pauseAtTime: 0,
+        timer: null
+    })
     const fontSize = useMemo(() => {
         if (strongType == StrongType.VERY_EASY) {
             return 0.04
@@ -398,14 +411,43 @@ export const Enemy = ({
         }
     }
 
+    const enableMoveToInitPositionAndShootingPortScript = () => {
+        setShootingPositionInfo()
+        moveToInitPositionIRef.current.startMoveToInitPosition = true
+        moveToInitPositionIRef.current.movedToTopPosition = true
+    }
+
     const moveToInitPosition = () => {
         //获取initPosition.z的位置，并且+屏幕最顶部距离世界的位置，模拟从屏幕外进入
         const totalHight = initPosition.z + size.height / 1024
         enemyRef.current.setTranslation(vec3({ x: initPosition.x, y: initPosition.y, z: totalHight }))
-        setShootingPositionInfo()
-        moveToInitPositionIRef.current.startMoveToInitPosition = true
-        moveToInitPositionIRef.current.movedToTopPosition = true
         textRef.current.visible = true
+        if (spawnDelayReady()) {
+            enableMoveToInitPositionAndShootingPortScript()
+        }
+    }
+
+    const subCheckSpawnTime = (isPaused: boolean) => {
+        isPauseRef.current = isPaused
+        if (isPaused) {
+            tempTimerRef.current.timer && clearTimeout(tempTimerRef.current.timer)
+            //累加暂停时间，让每次setTimeout的时间减去暂停时间
+            tempTimerRef.current.pauseAtTime += tempTimerRef.current.accumulativeTime
+            if (!spawnDelayReady()) {
+                //clear timeout
+                spawnDelayCancel()
+            }
+        } else {
+            const _spawnDelay = spawnDelay || 0
+            tempTimerRef.current.accumulativeTime = 0
+            //restart timeout
+            if (tempTimerRef.current.pauseAtTime > 0 && _spawnDelay > tempTimerRef.current.pauseAtTime) {
+                tempTimerRef.current.timer = setTimeout(() => {
+                    enableMoveToInitPositionAndShootingPortScript()
+                    clearTimeout(tempTimerRef.current.timer)
+                }, (_spawnDelay - tempTimerRef.current.pauseAtTime) * 1000)
+            }
+        }
     }
 
     const handleUpdateColorOnFrame = (delta: number) => {
@@ -571,9 +613,15 @@ export const Enemy = ({
             changeEnemyColliderGroup([])
             moveToInitPosition()
         }
-    }, [cuboidSize])
+    }, [cuboidSize, spawnDelayReady()])
+
+    useEffect(() => useGamePauseStore.subscribe(
+        state => state.isPaused, subCheckSpawnTime
+    ), [])
 
     useFixedFrameUpdate((state, delta) => {
+        tempTimerRef.current.accumulativeTime += delta
+        if (isPauseRef.current) return
         if (type == "DEBUG") return
         if (!enemyRef.current || !textRef.current) return
         handleUpdateColorOnFrame(delta)

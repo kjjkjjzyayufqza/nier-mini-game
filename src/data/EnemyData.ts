@@ -549,7 +549,7 @@ export const EnemyData: EnemyProps[] = [
     strongType: StrongType.EASY,
     points: 100,
     health: 3,
-    spawnDelay: 10,
+    spawnDelay: 5,
   },
   {
     id: "enemy_10_3",

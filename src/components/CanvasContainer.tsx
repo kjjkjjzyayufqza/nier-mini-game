@@ -19,6 +19,7 @@ import { Schema } from 'leva/dist/declarations/src/types/public';
 import systemInfoStore from '../store/SystemInfoStore';
 import { isGameClear } from '../lib/isGameClear';
 import PostEffectComposer from './PostEffectComposer';
+import GamePauseSystem from './GamePauseSystem';
 
 const keyboardMap = [
   { name: "forward", keys: ["KeyW"] },
@@ -115,6 +116,7 @@ export default function CanvasContainer() {
         {pDebug.threeStats && <Stats />}
       </Canvas>
       <Loader />
+      <GamePauseSystem />
     </KeyboardControls >
   )
 }
