@@ -61,9 +61,9 @@ export const Enemy = ({
     };
     const healthRef = useRef<number>(health)
     const [finalConfirmEnemyHealth, setFinalConfirmEnemyHealth] = useState<number>(health)
-    const isPauseRef = useRef<boolean>(false)
     const { viewport, size } = useThree();
     const spawnEffect = useRef<boolean>(false)
+    const isPause = useGamePauseStore(state => state.isPaused)
     const tempTimerRef = useRef<{
         accumulativeTime: number,
         pauseAtTime: number,
@@ -428,7 +428,6 @@ export const Enemy = ({
     }
 
     const subCheckSpawnTime = (isPaused: boolean) => {
-        isPauseRef.current = isPaused
         if (isPaused) {
             tempTimerRef.current.timer && clearTimeout(tempTimerRef.current.timer)
             //累加暂停时间，让每次setTimeout的时间减去暂停时间
@@ -621,7 +620,7 @@ export const Enemy = ({
 
     useFixedFrameUpdate((state, delta) => {
         tempTimerRef.current.accumulativeTime += delta
-        if (isPauseRef.current) return
+        if (isPause) return
         if (type == "DEBUG") return
         if (!enemyRef.current || !textRef.current) return
         handleUpdateColorOnFrame(delta)

@@ -5,7 +5,6 @@ import useGamePauseStore from '../../store/GamePauseStore';
 import useAudioStore from '../../store/AudioStore';
 
 const AnimatedDiv = animated('div');
-const gamepadManager = new GamepadManager();
 export default function GamePauseOverlay() {
     const opacityValueRef = useRef<number>(0)
     const [styles, api] = useSpring(() => ({
