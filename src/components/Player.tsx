@@ -520,7 +520,9 @@ export const Player = () => {
             rb.current.setLinvel(vec3({ x: 0, y: 0, z: 0 }), true)
         }
     }
-    const resetPlayerVelocitySub = useGamePauseStore.subscribe(state => state.isPaused, resetPlayerVelocity);
+    useEffect(() => useGamePauseStore.subscribe(
+        state => state.isPaused, resetPlayerVelocity
+    ), [])
 
     return (
         <>

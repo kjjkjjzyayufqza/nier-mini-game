@@ -41,7 +41,7 @@ export default function GamePauseOverlay() {
     ), [])
 
     return (
-        <AnimatedDiv className='w-screen h-screen bg-[#2e2c27] pointer-events-auto z-10' style={{
+        <AnimatedDiv className='w-screen h-screen bg-[#2e2c27] pointer-events-auto z-10 absolute' style={{
             opacity: styles.opacity,
             display: styles.opacity.to((opacity) => opacity === 0 ? 'none' : 'flex')
         }}>
