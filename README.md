@@ -1,5 +1,7 @@
 # NieR: Automata | The [E] nding game
 
+# [Live Demo](https://nier-mini-game.vercel.app)
+
 This project was born when I was learning React Three Fiber.
 
 ---
