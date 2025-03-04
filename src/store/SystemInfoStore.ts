@@ -3,6 +3,7 @@ import { devtools, subscribeWithSelector } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
 
 interface ISystemInfo {
+  initRes: boolean;
   mainOverlayShowed: boolean;
   titleScreenShowed: boolean;
   currentPhase: string;
@@ -10,6 +11,7 @@ interface ISystemInfo {
 
 // 初始值
 const initSystemInfoValue: ISystemInfo = {
+  initRes: false,
   mainOverlayShowed: false,
   titleScreenShowed: false,
   currentPhase: "",

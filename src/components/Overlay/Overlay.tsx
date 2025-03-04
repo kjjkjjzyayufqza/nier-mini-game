@@ -17,8 +17,11 @@ import NotificationOverlay from './NotificationOverlay';
 import { useOverlayStore } from '../../store/OverlayStore';
 import { useCutsceneStore } from '../../store/CutsceneStore';
 import GamePauseOverlay from './GamePauseOverlay';
+import PreLoadAssetsOverlay from './PreLoadAssetsOverlay';
+import systemInfoStore from '../../store/SystemInfoStore';
 
 export default function Overlay() {
+    const isInitRes = systemInfoStore((state) => state.systemInfo.initRes);
     const isShowMainScreen = useOverlayStore((state) => state.isShowOverlay.mainTitleOverlay);
     const isShowTitleScreen = useOverlayStore((state) => state.isShowOverlay.titleScreenOverlay);
     const isShowContinueOverlay = useOverlayStore((state) => state.isShowOverlay.continueOverlay);
@@ -32,24 +35,28 @@ export default function Overlay() {
     const isShowRequestPlayerInfoPhase4Overlay = useOverlayStore((state) => state.isShowOverlay.requestPlayerInfoPhase4Overlay);
     const isShowFinalConfirmTextOverlay = useOverlayStore((state) => state.isShowOverlay.finalConfirmTextOverlay);
     const isShowThanksForPlayerOverlay = useOverlayStore((state) => state.isShowOverlay.thanksForPlayOverlay);
+    console.log('isInitRes', isInitRes);
     return (
         <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center select-none flex-col pointer-events-none">
-            <ConnectNetworkNoticeOverlay />
-            <NotificationOverlay />
-            <GamePauseOverlay />
-            {isShowMainScreen && <MainTitleOverlay />}
-            {isShowTitleScreen && <StartTitleOverlay />}
-            {isShowContinueOverlay && <ContinueOverlay />}
-            {isShowRequestOtherPlayerHelpOverlay && <RequestOtherPlayerHelpOverlay />}
-            {isCutsceneActive && <CutsceneOverlay />}
-            {isShowOnlineResultOverlay && <ResultOverlay />}
-            {isShowPlayerSummaryOverlay && <PlayerSummaryOverlay />}
-            {isShowRequestPlayerInfoOverlay && <RequestPlayerInfoOverlay />}
-            {isShowRequestPlayerInfoPhase2Overlay && <RequestPlayerInfoPhase2Overlay />}
-            {isShowRequestPlayerInfoPhase3Overlay && <RequestPlayerInfoPhase3Overlay />}
-            {isShowRequestPlayerInfoPhase4Overlay && <RequestPlayerInfoPhase4Overlay />}
-            {isShowFinalConfirmTextOverlay && <FinalConfirmTextOverlay />}
-            {isShowThanksForPlayerOverlay && <ThanksForPlayerOverlay />}
+            {!isInitRes && <PreLoadAssetsOverlay />}
+            {isInitRes && <>
+                <ConnectNetworkNoticeOverlay />
+                <NotificationOverlay />
+                <GamePauseOverlay />
+                {isShowMainScreen && <MainTitleOverlay />}
+                {isShowTitleScreen && <StartTitleOverlay />}
+                {isShowContinueOverlay && <ContinueOverlay />}
+                {isShowRequestOtherPlayerHelpOverlay && <RequestOtherPlayerHelpOverlay />}
+                {isCutsceneActive && <CutsceneOverlay />}
+                {isShowOnlineResultOverlay && <ResultOverlay />}
+                {isShowPlayerSummaryOverlay && <PlayerSummaryOverlay />}
+                {isShowRequestPlayerInfoOverlay && <RequestPlayerInfoOverlay />}
+                {isShowRequestPlayerInfoPhase2Overlay && <RequestPlayerInfoPhase2Overlay />}
+                {isShowRequestPlayerInfoPhase3Overlay && <RequestPlayerInfoPhase3Overlay />}
+                {isShowRequestPlayerInfoPhase4Overlay && <RequestPlayerInfoPhase4Overlay />}
+                {isShowFinalConfirmTextOverlay && <FinalConfirmTextOverlay />}
+                {isShowThanksForPlayerOverlay && <ThanksForPlayerOverlay />}
+            </>}
         </div>
     );
 };

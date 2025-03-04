@@ -1,5 +1,4 @@
-import { Html } from "@react-three/drei";
-import { RenderCallback, useLoader } from "@react-three/fiber";
+import { Html, useGLTF } from "@react-three/drei";
 import { vec3 } from "@react-three/rapier";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -13,7 +12,7 @@ import { useControls } from "leva";
 
 const HexagonContainer = () => {
     const [radius, setRadius] = useState<number>(0.15) // 六边形的半径
-    const { nodes: playerNodes, scene: playerModel } = useLoader(GLTFLoader, "./nier/player.glb");
+    const { nodes: playerNodes, scene: playerModel } = useGLTF("./nier/player.glb");
     const hexagonContainerRef = useRef<any>(null);
     const otherPlayerRefs = useRef<any[]>([]);
     const destroyOtherPlayerIndexRefs = useRef<number>(0);

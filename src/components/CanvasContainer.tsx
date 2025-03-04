@@ -1,11 +1,11 @@
 import { Canvas } from '@react-three/fiber'
-import { KeyboardControls, Loader, OrbitControls, PerformanceMonitor, Stats, useDetectGPU } from '@react-three/drei';
+import { Html, KeyboardControls, OrbitControls, PerformanceMonitor, Stats, useDetectGPU, useProgress } from '@react-three/drei';
 import { Player } from './Player';
 import { Physics } from '@react-three/rapier';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import AirWall from './AirWall';
 import { ThreeEffects } from './ThreeEffects';
-import { NoToneMapping } from 'three';
+import { NoToneMapping, TextureLoader } from 'three';
 import { SceneEffects } from './SceneEffects';
 import { Perf } from 'r3f-perf'
 import { ProjectileSystem } from './ProjectileSystem';
@@ -20,6 +20,8 @@ import systemInfoStore from '../store/SystemInfoStore';
 import { isGameClear } from '../lib/isGameClear';
 import PostEffectComposer from './PostEffectComposer';
 import GamePauseSystem from './GamePauseSystem';
+import PreLoadAssetsOverlay from './Overlay/PreLoadAssetsOverlay';
+import { FontPreloader } from './FontPreloader';
 
 const keyboardMap = [
   { name: "forward", keys: ["KeyW"] },
@@ -91,20 +93,17 @@ export default function CanvasContainer() {
       >
         <PerformanceMonitor onIncline={() => setDpr(1)} onDecline={() => setDpr(0.75)} />
         <CustomLevaPanel />
-        <color attach="background" args={[pScene.bgColor]} />
         <ambientLight intensity={4.1} color={'#E1DECE'} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={1} />
-        {gameStarted &&
-          <>
-            <Physics debug={pDebug.hitBoxDebug} timeStep={"vary"}>
-              {/* timeStep = vary 是为了避免当前帧率低于设置的值，可能会导致物理更新滞后，影响流畅性 */}
-              <AirWall />
-              <Player />
-              <EnemySystem />
-              <ProjectileSystem />
-            </Physics>
-          </>
-        }
+        <color attach="background" args={[pScene.bgColor]} />
+        <FontPreloader />
+        <Physics debug={pDebug.hitBoxDebug} timeStep={"vary"}>
+          {/* timeStep = vary 是为了避免当前帧率低于设置的值，可能会导致物理更新滞后，影响流畅性 */}
+          <AirWall />
+          {gameStarted && <Player />}
+          {gameStarted && <EnemySystem />}
+          {gameStarted && <ProjectileSystem />}
+        </Physics>
         <CameraEffectsSystem />
         <PlayTimerCounter />
         {pDebug.freeCamera && <OrbitControls />}
@@ -115,7 +114,6 @@ export default function CanvasContainer() {
         {pDebug.r3f_perf && <Perf position='top-left' style={{ marginTop: "3rem" }} />}
         {pDebug.threeStats && <Stats />}
       </Canvas>
-      <Loader />
       <GamePauseSystem />
     </KeyboardControls >
   )

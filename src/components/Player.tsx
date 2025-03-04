@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useLoader, useThree } from '@react-three/fiber'
-import { Html, useKeyboardControls } from '@react-three/drei';
+import { useThree } from '@react-three/fiber'
+import { Html, useGLTF, useKeyboardControls } from '@react-three/drei';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { BallCollider, CollisionTarget, interactionGroups, quat, RapierRigidBody, RigidBody, vec3 } from '@react-three/rapier';
 import * as THREE from 'three';
@@ -61,7 +61,7 @@ export const Player = () => {
     const rotationTarget = useRef<any>(0);
     const [, get] = useKeyboardControls();
     const [speed, setSpeed] = useState<number>(0.6);
-    const { nodes: playerNodes, scene: playerModel } = useLoader(GLTFLoader, "./nier/player.glb");
+    const { nodes: playerNodes, scene: playerModel } = useGLTF("./nier/player.glb");
     const effectStartPosition = useRef<THREE.Vector3>(vec3({ x: 0, y: 0, z: 0 }));
     const effectTargetPosition = useRef<THREE.Vector3>(vec3({ x: 0, y: 0, z: 0 }));
     const isClicking = useRef<boolean>(false);
@@ -572,3 +572,6 @@ export const Player = () => {
         </>
     );
 };
+
+
+useGLTF.preload("./nier/player.glb")

@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { TextureLoader } from 'three'
 import PubSub from "pubsub-js";
 import { useFixedFrameUpdate } from "../hook/useFixedFrameUpdate";
+import { useTexture } from "@react-three/drei";
 
 const PlayerOnHitEffectOutsideExpandingRing = () => {
   const materialRef = useRef<any>(null);
@@ -214,7 +215,7 @@ const PlayerOnHitEffectInsideExpandingRing = () => {
 export const PlayerOnHitLightningEffect = () => {
   const groupRef = useRef<any>(null);
   const lightningGroupRef = useRef<any>(null);
-  const colorMap = useLoader(TextureLoader, '/nier/texture/—Pngtree—thunder png free vector art_8133602.png');
+  const colorMap = useTexture('/nier/texture/—Pngtree—thunder png free vector art_8133602.png')
   const effectSpawnTime = useRef<number>(0);
   const lightningRef = useRef<any>(null);
   const lightRef = useRef<any>(null);
@@ -359,3 +360,5 @@ export const PlayerOnHitExpandingRingEffect = () => {
     <PlayerOnHitBlackHole />
   </group>
 }
+
+useTexture.preload('/nier/texture/—Pngtree—thunder png free vector art_8133602.png')

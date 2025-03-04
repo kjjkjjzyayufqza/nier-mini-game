@@ -6,7 +6,6 @@ import usePlayerStore from '../store/PlayerStore';
 import { useDebouncedCallback } from 'use-debounce';
 import systemInfoStore from '../store/SystemInfoStore';
 import useAudioStore from '../store/AudioStore';
-import { useTranslations } from 'next-intl';
 import { useCutsceneStore } from '../store/CutsceneStore';
 
 
@@ -210,7 +209,6 @@ export const EnemySystem = React.memo(() => {
 
     return (
         <>
-            <FontPreloader />
             <Html>
                 {/* <button className='text-white' onClick={() => {
                     // const newMap = new Map();
@@ -231,16 +229,3 @@ export const EnemySystem = React.memo(() => {
         </>
     );
 });
-
-// 独立字体预加载组件
-const FontPreloader = React.memo(() => (
-    <Text
-        font="./nier/fonts/Manrope-Light.ttf"
-        color="#E7E2DF"
-        fontSize={0}
-        sdfGlyphSize={128}
-        visible={false}
-    >
-        {""}
-    </Text>
-));
