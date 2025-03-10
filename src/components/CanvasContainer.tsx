@@ -18,9 +18,7 @@ import { EnemySystem } from './EnemySystem';
 import { Schema } from 'leva/dist/declarations/src/types/public';
 import systemInfoStore from '../store/SystemInfoStore';
 import { isGameClear } from '../lib/isGameClear';
-import PostEffectComposer from './PostEffectComposer';
 import GamePauseSystem from './GamePauseSystem';
-import PreLoadAssetsOverlay from './Overlay/PreLoadAssetsOverlay';
 import { FontPreloader } from './FontPreloader';
 
 const keyboardMap = [

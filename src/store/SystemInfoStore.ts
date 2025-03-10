@@ -3,7 +3,6 @@ import { devtools, subscribeWithSelector } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
 
 interface ISystemInfo {
-  initRes: boolean;
   mainOverlayShowed: boolean;
   titleScreenShowed: boolean;
   currentPhase: string;
@@ -11,7 +10,6 @@ interface ISystemInfo {
 
 // 初始值
 const initSystemInfoValue: ISystemInfo = {
-  initRes: false,
   mainOverlayShowed: false,
   titleScreenShowed: false,
   currentPhase: "",
@@ -19,6 +17,8 @@ const initSystemInfoValue: ISystemInfo = {
 
 interface SystemInfoContextType {
   systemInfo: ISystemInfo;
+  initRes: boolean;
+  doneInitRes: () => void;
   gameStarted: boolean;
   resetSystemInfo: () => void;
   setCurrentPhase: (newPhase: string) => void;
@@ -41,6 +41,8 @@ interface SystemInfoContextType {
 
 const systemInfoStore = create<SystemInfoContextType>()(
   subscribeWithSelector((set, get) => ({
+    initRes: false,
+    doneInitRes: () => set({ initRes: true }),
     gameStarted: false,
     systemInfo: initSystemInfoValue,
     resetSystemInfo: () => {

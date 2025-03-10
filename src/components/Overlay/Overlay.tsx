@@ -21,7 +21,7 @@ import PreLoadAssetsOverlay from './PreLoadAssetsOverlay';
 import systemInfoStore from '../../store/SystemInfoStore';
 
 export default function Overlay() {
-    const isInitRes = systemInfoStore((state) => state.systemInfo.initRes);
+    const isInitRes = systemInfoStore((state) => state.initRes);
     const isShowMainScreen = useOverlayStore((state) => state.isShowOverlay.mainTitleOverlay);
     const isShowTitleScreen = useOverlayStore((state) => state.isShowOverlay.titleScreenOverlay);
     const isShowContinueOverlay = useOverlayStore((state) => state.isShowOverlay.continueOverlay);
@@ -35,7 +35,6 @@ export default function Overlay() {
     const isShowRequestPlayerInfoPhase4Overlay = useOverlayStore((state) => state.isShowOverlay.requestPlayerInfoPhase4Overlay);
     const isShowFinalConfirmTextOverlay = useOverlayStore((state) => state.isShowOverlay.finalConfirmTextOverlay);
     const isShowThanksForPlayerOverlay = useOverlayStore((state) => state.isShowOverlay.thanksForPlayOverlay);
-    console.log('isInitRes', isInitRes);
     return (
         <div className="w-full h-full absolute top-0 left-0 flex items-center justify-center select-none flex-col pointer-events-none">
             {!isInitRes && <PreLoadAssetsOverlay />}

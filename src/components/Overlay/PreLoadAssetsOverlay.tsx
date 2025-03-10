@@ -7,7 +7,7 @@ import systemInfoStore from '../../store/SystemInfoStore';
 
 const AnimatedDiv = animated('div');
 export default function PreLoadAssetsOverlay() {
-    const updateSystemInfo = systemInfoStore((state) => state.updateSystemInfo);
+    const doneInitRes = systemInfoStore((state) => state.doneInitRes);
     const { active, progress, errors, item, loaded, total } = useProgress()
     const [loadBackgroundStyle, loadBackgroundStyleApi] = useSpring<{
         opacity: number;
@@ -93,7 +93,7 @@ export default function PreLoadAssetsOverlay() {
                 config: { duration: 1000 },
                 onChange: (e) => {
                     if (e.value.opacity <= 0) {
-                        updateSystemInfo({ initRes: true });
+                        doneInitRes();
                     }
                 }
             })
