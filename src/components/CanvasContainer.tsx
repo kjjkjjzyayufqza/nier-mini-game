@@ -95,22 +95,7 @@ export default function CanvasContainer() {
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={1} />
         <color attach="background" args={[pScene.bgColor]} />
         <FontPreloader />
-        <Physics debug={pDebug.hitBoxDebug} timeStep={"vary"}>
-          {/* timeStep = vary 是为了避免当前帧率低于设置的值，可能会导致物理更新滞后，影响流畅性 */}
-          <AirWall />
-          {gameStarted && <Player />}
-          {gameStarted && <EnemySystem />}
-          {gameStarted && <ProjectileSystem />}
-        </Physics>
-        <CameraEffectsSystem />
-        <PlayTimerCounter />
-        {pDebug.freeCamera && <OrbitControls />}
-        <SceneBackgroundText />
-        <SceneEffects />
-        {/* {postEffects && <PostEffectComposer />} */}
-        {postEffects && <ThreeEffects />}
-        {pDebug.r3f_perf && <Perf position='top-left' style={{ marginTop: "3rem" }} />}
-        {pDebug.threeStats && <Stats />}
+        
       </Canvas>
       <GamePauseSystem />
     </KeyboardControls >
