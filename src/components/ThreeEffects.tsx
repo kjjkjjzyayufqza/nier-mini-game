@@ -54,7 +54,7 @@ export const ThreeEffects = () => {
         const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
         composer.current.addPass(ssaoPass);
 
-        const smaaPass = new SMAAPass(window.innerWidth, window.innerHeight);
+        const smaaPass = new SMAAPass();
         composer.current.addPass(smaaPass);
 
         const outputPass = new OutputPass();
