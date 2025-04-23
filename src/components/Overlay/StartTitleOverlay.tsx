@@ -29,6 +29,7 @@ export default function StartTitleOverlay() {
                 // 3. 同步消失
                 await next({ titleOpacity: -0.5, subTitleOpacity: -0.5 });
             }
+            await next({ titleOpacity: 0, subTitleOpacity: 0 });
         },
         onRest: () => {
             // 动画结束后更新系统状态

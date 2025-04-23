@@ -87,7 +87,7 @@ export default function PreLoadAssetsOverlay() {
     }, [])
 
     useEffect(() => {
-        if (total > 0 && loaded === total && counterPreLoadTime <= 0) {
+        if (loaded === total && counterPreLoadTime <= 0) {
             loadBackgroundStyleApi.start({
                 opacity: 0,
                 config: { duration: 1000 },

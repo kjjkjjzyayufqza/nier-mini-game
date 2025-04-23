@@ -183,7 +183,7 @@ export const HitExplosionParticleEffects = () => {
                 <HitExplosionParticle id={`startHitExplosionParticle_${index}`} key={index} count={20} spread={0.18} size={0.3} />
             ))}
             {Array.from({ length: HIT_EXPLOSION_PARTICLE_COUNT }).map((_, index) => (
-                <HitExplosionParticle id={`startHitExplosionSmallParticle_${index}`} key={index} count={20} spread={0.07} size={0.07} />
+                <HitExplosionParticle id={`startHitExplosionSmallParticle_${index}`} key={index} count={80} spread={0.08} size={0.06} />
             ))}
         </group>
     );
