@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext, use } from 'react';
+import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { vec3 } from '@react-three/rapier';
 import { PlayerEffectsBoxParticle } from './PlayerEffectsBoxParticle';
@@ -17,112 +17,145 @@ export const PlayerMoveEffects = () => {
     const playerEffectsGroupRef = useRef<THREE.Group>(null);
     const particles = useRef<ParticlesProps[]>([]);
     const PARTICLES_COUNT = 20;
-    const boxMinSize = 0.017;
-    const boxMaxSize = 0.026;
-    const spawnRange = 0.08
-    const targetRange = 0.3
+    // Constants for particle properties
+    const BOX_MIN_SIZE = 0.017;
+    const BOX_MAX_SIZE = 0.026;
+    const SPAWN_RANGE = 0.08;
+    const SPAWN_RANGE_Y = SPAWN_RANGE / 8;
+    const TARGET_RANGE = 0.3;
+    const TARGET_RANGE_Y = TARGET_RANGE / 8;
+    const ROTATION_SPEED = 0.075;
+    const OPACITY_DECAY = 0.018;
+    const LERP_FACTOR = 0.01;
+    
     const particlesIndex = useRef<number>(-1);
+    // Reusable Vector3 objects to reduce garbage collection
+    const tempVec3Start = new THREE.Vector3();
+    const tempVec3Target = new THREE.Vector3();
+    // Create a particle at the given position
     const createParticle = (position: THREE.Vector3) => {
-        const randomStartPosition = vec3({
-            x: position.x + (Math.random() - 0.5) * spawnRange,
-            y: position.y + (Math.random() - 0.5) * spawnRange / 8,
-            z: position.z + (Math.random() - 0.5) * spawnRange
-        })
-        const randomTargetPosition = vec3({
-            x: position.x + (Math.random() - 0.5) * targetRange,
-            y: position.y + (Math.random() - 0.5) * targetRange / 8,
-            z: position.z + (Math.random() - 0.5) * targetRange
-        })
-        //set id to visible true
-        particlesIndex.current = particlesIndex.current + 1
-        if (particlesIndex.current >= PARTICLES_COUNT) {
-            particlesIndex.current = 0
-        }
-        if (playerEffectsGroupRef.current) {
-            const group = playerEffectsGroupRef.current.getObjectByName(particlesIndex.current.toString())
-            if (group) {
-                particles.current[particlesIndex.current].enabled = true
-                particles.current[particlesIndex.current].position = randomStartPosition
-                particles.current[particlesIndex.current].targetPosition = randomTargetPosition
-                group.visible = true
-                group.position.set(randomStartPosition.x, randomStartPosition.y, randomStartPosition.z)
-            }
-        }
+        // Increment and wrap the particle index
+        particlesIndex.current = (particlesIndex.current + 1) % PARTICLES_COUNT;
+        
+        // Get group early to avoid unnecessary computation if not available
+        const group = playerEffectsGroupRef.current?.getObjectByName(particlesIndex.current.toString());
+        if (!group) return;
+        
+        // Calculate random start and target positions using reusable vectors
+        tempVec3Start.set(
+            position.x + (Math.random() - 0.5) * SPAWN_RANGE,
+            position.y + (Math.random() - 0.5) * SPAWN_RANGE_Y,
+            position.z + (Math.random() - 0.5) * SPAWN_RANGE
+        );
+        
+        tempVec3Target.set(
+            position.x + (Math.random() - 0.5) * TARGET_RANGE,
+            position.y + (Math.random() - 0.5) * TARGET_RANGE_Y,
+            position.z + (Math.random() - 0.5) * TARGET_RANGE
+        );
+        
+        // Update particle properties
+        const particle = particles.current[particlesIndex.current];
+        particle.enabled = true;
+        particle.position.copy(tempVec3Start);
+        particle.targetPosition.copy(tempVec3Target);
+        
+        // Update group properties
+        group.visible = true;
+        group.position.copy(tempVec3Start);
     };
 
-    const rotationSpeed = 0.075
     useFixedFrameUpdate((state, delta) => {
-        if (playerEffectsGroupRef.current) {
-            particles.current.forEach((particle) => {
-                if (particle.enabled && playerEffectsGroupRef.current) {
-                    const mesh = playerEffectsGroupRef.current.getObjectByName(`${particle.id}`)
-                    if (mesh) {
-                        mesh.position.lerp(vec3({
-                            x: particle.targetPosition.x,
-                            y: particle.targetPosition.y,
-                            z: particle.targetPosition.z
-                        }), 0.01);
-                        mesh.rotation.y += Math.random() * rotationSpeed;
-                        if (mesh.children.length > 0) {
-                            //寻找Material然后更新透明度
-                            const material = (mesh.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial
-                            if (material) {
-                                material.opacity -= 0.018
-                                if (material.opacity <= -0.02) {
-                                    particle.enabled = false
-                                    mesh.visible = false
-                                    material.opacity = 1
-                                }
-                            }
-                        }
+        const group = playerEffectsGroupRef.current;
+        if (!group) return;
+        
+        particles.current.forEach((particle) => {
+            if (!particle.enabled) return;
+            
+            const mesh = group.getObjectByName(`${particle.id}`);
+            if (!mesh) return;
+            
+            // Update position using lerp
+            mesh.position.lerp(particle.targetPosition, LERP_FACTOR);
+            
+            // Apply random rotation
+            mesh.rotation.y += Math.random() * ROTATION_SPEED;
+            
+            // Update opacity
+            if (mesh.children.length > 0) {
+                const material = (mesh.children[0] as THREE.Mesh).material as THREE.MeshStandardMaterial;
+                if (material) {
+                    material.opacity -= OPACITY_DECAY;
+                    
+                    // Reset particle when opacity is low enough
+                    if (material.opacity <= -0.02) {
+                        particle.enabled = false;
+                        mesh.visible = false;
+                        material.opacity = 1;
                     }
-
                 }
-            });
-        }
+            }
+        });
     });
 
+    // Initialize particle pool
     const initParticles = () => {
+        const group = playerEffectsGroupRef.current;
+        if (!group) return;
+        
+        // Preallocate vector3 objects for particles
+        const zeroVec = new THREE.Vector3(0, 0, 0);
+        
         for (let i = 0; i < PARTICLES_COUNT; i++) {
-            const randomSize = boxMinSize + (boxMaxSize - boxMinSize) * Math.random();
+            const randomSize = BOX_MIN_SIZE + (BOX_MAX_SIZE - BOX_MIN_SIZE) * Math.random();
             const type = Math.random() > 0.5 ? "white" : "black";
+            
+            // Create particle with reusable vector3 objects
             particles.current.push({
                 id: i,
                 enabled: false,
-                position: vec3({ x: 0, y: 0, z: 0 }),
-                targetPosition: vec3({ x: 0, y: 0, z: 0 }),
+                position: new THREE.Vector3(),
+                targetPosition: new THREE.Vector3(),
                 boxSize: randomSize,
                 type: type
-            })
-            if (playerEffectsGroupRef.current) {
-                playerEffectsGroupRef.current.add(
-                    PlayerEffectsBoxParticle({
-                        id: `${i}`,
-                        type: type,
-                        position: vec3({ x: 0, y: 0, z: 0 }),
-                        boxSize: [randomSize, randomSize, randomSize]
-                    }))
-            }
+            });
+            
+            // Add particle to group
+            group.add(
+                PlayerEffectsBoxParticle({
+                    id: `${i}`,
+                    type: type,
+                    position: zeroVec,
+                    boxSize: [randomSize, randomSize, randomSize]
+                })
+            );
         }
     }
 
     useEffect(() => {
-        const spawnPlayerMovementParticlesToken = PubSub.subscribe('spawnPlayerMovementParticles', (msg: any, data: { position: THREE.Vector3 }) => {
-            //每次随机生成1/2个粒子
-            const count = 1 + Math.floor(Math.random() * 3)
-            for (let i = 0; i < count; i++) {
-                createParticle(data.position);
+        // Subscribe to particle spawn events
+        const spawnPlayerMovementParticlesToken = PubSub.subscribe(
+            'spawnPlayerMovementParticles', 
+            (msg: any, data: { position: THREE.Vector3 }) => {
+                // Generate 1-3 particles per event
+                const count = 1 + Math.floor(Math.random() * 3);
+                for (let i = 0; i < count; i++) {
+                    createParticle(data.position);
+                }
             }
-        })
+        );
+        
+        // Initialize particle system
         if (playerEffectsGroupRef.current) {
-            playerEffectsGroupRef.current.clear()
-            initParticles()
+            playerEffectsGroupRef.current.clear();
+            initParticles();
         }
+        
+        // Cleanup on component unmount
         return () => {
             PubSub.unsubscribe(spawnPlayerMovementParticlesToken);
-        }
-
-    }, [])
+        };
+    }, []);
 
     return (
         <>
@@ -131,4 +164,3 @@ export const PlayerMoveEffects = () => {
         </>
     );
 }
-
